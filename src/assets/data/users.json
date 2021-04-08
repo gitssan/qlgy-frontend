@@ -1,0 +1,34 @@
+[
+    {
+        "firstName": "Indy",
+        "lastName": "Cat3",
+        "emailAddress": "Qlgy36393639@gmail.com",
+        "telephoneNumber": "+31619610308",
+        "status": "public",
+        "createdAt": "2021-03-29T20:59:29.823Z"
+    },
+    {
+        "firstName": "Kanzi",
+        "lastName": "at2",
+        "emailAddress": "Qlgy36393639@gmail.com",
+        "telephoneNumber": "+31619610308",
+        "status": "private",
+        "createdAt": "2021-03-29T20:59:02.922Z"
+    },
+    {
+        "firstName": "Leonie",
+        "lastName": "Cat1",
+        "emailAddress": "Qlgy36393639@gmail.com",
+        "telephoneNumber": "+31619610308",
+        "status": "private",
+        "createdAt": "2021-03-29T20:58:08.188Z"
+    },
+    {
+        "firstName": "Gitssan",
+        "lastName": "Falcon",
+        "emailAddress": "Qlgy36393639@gmail.com",
+        "telephoneNumber": "+31619610308",
+        "status": "public",
+        "createdAt": "2021-03-29T20:55:22.084Z"
+    }
+]

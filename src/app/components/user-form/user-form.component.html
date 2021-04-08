@@ -1,0 +1,40 @@
+<div [ngClass]="(viewState === ViewState.NEW) ? 'user-form--new' : ''" class="user-form">   
+    <form [formGroup]="userForm" novalidate autocomplete="false">
+        <header>
+            <h6>{{ (viewState === ViewState.NEW) ? 'New user' : 'Edit user'}} </h6>
+            <span *ngIf="(viewState !== ViewState.NEW)"> _id: {{userModelId()}}</span>    
+        </header>
+
+        <main>
+            <label for="firstName">firstname</label>
+            <input type="text" class="form-control" id="firstName" formControlName="firstName" placeholder="firstname"
+                autocomplete="false" />
+
+            <label for="lastName">lastname</label>
+            <input type="text" class="form-control" id="lastName" formControlName="lastName" placeholder="lastname" />
+            
+            <label for="emailAddress">email address</label>
+            <input type="email" class="form-control" id="emailAddress" formControlName="emailAddress"
+                    placeholder="emailaddress" autocomplete="false" />
+        
+            <label for="telephoneNumber">telephonenumber</label>
+            <input type="email" class="form-control" id="telephoneNumber" formControlName="telephoneNumber"
+                    placeholder="telephonenumber" autocomplete="false" />
+
+            <label>status</label>
+            <div class="user-form__radiobuttons">
+                <label><input type="radio" [value]="UserStatus.PUBLIC" formControlName="status"> public</label>
+                <label><input type="radio" [value]="UserStatus.PRIVATE" formControlName="status"> private</label>
+            </div>
+        </main>
+
+        <footer>
+            <div>All fields are required</div>
+            <div>
+                <button (click)="handleForm()" [disabled]="userForm.invalid">save</button>
+                <!-- <button (click)="changeViewState(ViewState.CANCEL)">cancel</button> -->
+                <button (click)="cancel()">cancel</button>
+            </div>
+        </footer>
+    </form>
+</div>

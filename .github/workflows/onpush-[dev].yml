@@ -1,0 +1,44 @@
+name: onPush - unit test, deploy on FTP
+
+on:
+  push:
+    branches:
+      - dev
+      - 'feature/**'
+jobs:
+  unit-test-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Install Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: '14'
+
+      - name: Install Dependencies
+        run: npm i
+
+      - name: Unit-test
+        run: npm test
+
+      - name: Build staging
+        run: npm run staging
+
+      - name: get-npm-version
+        id: package-version
+        uses: martinbeentjes/npm-get-version-action@master
+
+      - name: Deploy FTP
+        uses: SamKirkland/FTP-Deploy-Action@4.0.0
+        with:
+          server: ftp.vevida.com
+          # tmp limited access account for assessment purposes
+          username: due-volte.nl2
+          password: Qlgy36393639assessment
+          server-dir: /${{ steps.package-version.outputs.current-version}}-dev-qlgy/
+          log-level: verbose
+          local-dir: ./dist/
+          # exclude: svg/*

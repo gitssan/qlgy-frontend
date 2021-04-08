@@ -1,0 +1,26 @@
+@import "theme/variables";
+@import "theme/normalize";
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+h1 {
+  margin-bottom: 10px;
+  color: $brand-blue;
+  font-weight: 300;
+}
+
+.app-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+  margin-top: 10px;
+}
+
+.users {
+  margin-bottom: 10px;
+}
+
+.spacer-row {
+  height: 20px;
+}
