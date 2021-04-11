@@ -53,19 +53,19 @@ export class QlgyService {
     //   }
     // });
 
-    const index = this._usersData.findIndex((user:IUserModel)=> user._id === userModel._id);
+    const index = this._usersData.findIndex((user: IUserModel) => user._id === userModel._id);
 
-    if(index !== -1) {
-      this._usersData[index] = userModel;
+    if (index !== -1) {
+      this._usersData[index] = { ...userModel, ...{ modifiedAt: new Date() } };
       message = USER_SUCCESSFULLY_MODIFIED_FEEDBACK;
       this.setUsersData(this._usersData);
-    } 
-    
-    return of({ message , userModel });
+    }
+
+    return of({ message, userModel });
   }
 
   public userNew(userModel: IUserModel): Observable<any> {
-    const _userModel = { ...userModel };
+    const _userModel = { ...userModel, ...{ createdAt: new Date() } };
     _userModel._id = this._usersData.length;
     this._usersData.unshift(_userModel);
     this.setUsersData(this._usersData);

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { ApplicationState } from './generic/qlgy.models';
-import { LOAD_USERS } from './store/appState.actions';
+import { USERS_LOAD } from './store/appState.actions';
 
 @Component({
   selector: 'app-root',
@@ -15,6 +15,6 @@ export class AppComponent {
   }
 
   ngOnInit() {
-    this.store.dispatch({ type: LOAD_USERS });
+    this.store.dispatch({ type: USERS_LOAD });
   }
 }

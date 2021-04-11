@@ -1,0 +1,9 @@
+@import "../variables";
+ 
+input.ng-valid {
+    border: 1px solid $color-valid;
+}
+
+input.ng-invalid {
+    border: 1px solid $color-invalid;
+}

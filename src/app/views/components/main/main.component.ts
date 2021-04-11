@@ -1,8 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
-import { AbstractView } from '@app/generic/qlgy.classes';
-import { ApplicationState, IUserModel, ViewState } from '@app/generic/qlgy.models';
-import { MAIN_VIEW_STATE } from '@app/store/appState.actions';
-import { appViewStateSelector, usersSelector } from '@app/store/appstate.selectors';
+import { ApplicationState, IUserModel, ComponentState } from '@app/generic/qlgy.models';
+import { MAIN_COMPONENT_NEW_ENTRY_STATE } from '@app/store/appState.actions';
+import { mainComponentStateSelector, usersSelector } from '@app/store/appstate.selectors';
 import { select, Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
 
@@ -12,9 +11,9 @@ import { Observable, Subscription } from 'rxjs';
   styleUrls: ['./main.component.scss'],
 })
 export class MainComponent implements OnDestroy {
-  ViewState = ViewState;
+  ComponentState = ComponentState;
 
-  public viewState: ViewState = ViewState.VIEW;
+  public componentState: ComponentState = ComponentState.VIEW;
   public usersModel$: Observable<IUserModel[]>;
   public viewFeedbackError: boolean;
   public success: boolean;
@@ -22,26 +21,25 @@ export class MainComponent implements OnDestroy {
   public usersModel: IUserModel[];
 
   private userModelSubscription: Subscription;
-  private appViewStateSubscription: Subscription;
+  private appComponentStateSubscription: Subscription;
 
   constructor(public store: Store<{ getAppState: ApplicationState }>) {
     this.usersModel$ = this.store.pipe(select(usersSelector));
     this.userModelSubscription = this.store.select(usersSelector).subscribe((state: IUserModel[]) => {
       this.usersModel = state;
-      this.viewState = ViewState.VIEW;
     });
 
-    this.appViewStateSubscription = this.store.select(appViewStateSelector).subscribe((state: ViewState) => {
-      this.viewState = state;
+    this.appComponentStateSubscription = this.store.select(mainComponentStateSelector).subscribe((state: ComponentState) => {
+      this.componentState = state;
     });
   }
-
-  public changeViewState(viewState: ViewState) {
-      this.store.dispatch({ type: MAIN_VIEW_STATE, payload: viewState });
+  
+  changeComponentState(componentState: ComponentState) {
+    this.store.dispatch({ type: MAIN_COMPONENT_NEW_ENTRY_STATE, payload: componentState });
   }
 
   ngOnDestroy() {
     this.userModelSubscription.unsubscribe();
-    this.appViewStateSubscription.unsubscribe();
+    this.appComponentStateSubscription.unsubscribe();
   }
 }

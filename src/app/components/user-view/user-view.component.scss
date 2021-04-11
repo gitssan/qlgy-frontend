@@ -1,0 +1,17 @@
+@import "../../../assets/scss/variables";
+
+.user-view {
+  header, main {
+    display: grid;
+    grid-gap: 0.5rem;
+  }
+
+  header {
+    grid-template-columns: 45% 45% auto;
+  }
+
+  main {
+    grid-template-columns: 45% 45%;
+    margin-bottom: 1.0rem;
+  }
+}

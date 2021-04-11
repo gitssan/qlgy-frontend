@@ -1,41 +1,22 @@
-@import "../../../theme/variables.scss";
+@import "../../../assets/scss/variables";
 
 .user {
-  padding: 10px 25px 0 10px;
-  border-left: 5px solid $brand-blue;
-  background-color: $brand-grey-100;
-  margin-bottom: 10px;
-  border-radius: 5px;
+    padding: 1.0rem 2.5rem 0 1.0rem;
+    border-left: 0.5rem solid $brand-blue;
+    background-color: $brand-grey-100;
+    margin-bottom: 1.0rem;
+    border-radius: 0.5rem;
 
-  &__grid {
-    display: grid;
-    grid-template-columns: 40% 40% 20%;
-  }
-
-  header,
-  main {
-    display: grid;
-    grid-gap: 5px;
-  }
-
-  header {
-    grid-template-columns: 45% 45% auto;
-  }
-
-  main {
-    grid-template-columns: 45% 45%;
-    margin-bottom: 10px;
-  }
-
-  &--selected {
-    border: 5px solid $color-selected;
-  }
-
-  &--private {
-    border-color: $color-private;
-  }
-
-  &--public {
-    border-color: $color-public;
-  }
+    &--selected {
+        border-color: $color-selected;
+        border: 5px solid;
+    }
+    
+    &--private {
+        border-color: $color-private;
+    }
+    
+    &--public {
+        border-color: $color-public;
+    }
 }

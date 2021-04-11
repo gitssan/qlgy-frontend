@@ -1,40 +1,7 @@
-<section class="user"
-  [ngClass]="{'user--selected' : selected, 'user--public' : (userModel.status === UserStatus.PUBLIC),  'user--private' : (userModel.status === UserStatus.PRIVATE)}">
+<section 
+  [ngClass]="{'user' : true, 'user--selected' : selected, 'user--public' : (userModel?.status === UserStatus.PUBLIC),  'user--private' : (userModel?.status === UserStatus.PRIVATE)}">
 
-  <div *ngIf="viewState !== ViewState.EDIT">
-    <header>
-      <div>
-        <label class="">[{{ reversedIndex }}] firstname</label>
-        <strong>{{ userModel.firstName }}</strong>
-      </div>
-    
-      <div>
-        <label>lastname</label>
-        <strong data-karma="lastName">{{ userModel.lastName }}</strong>
-      </div>
-
-      <status [state]="userModel.status"></status>
-    </header>
-
-    <main>  
-          <label>_id</label>
-          <div>{{ userModel._id }}</div>
-        
-          <label>telephone number</label>
-          <div>{{ userModel.telephoneNumber }}</div>
-        
-          <label>created</label>
-          <div>{{ userModel.createdAt | date: 'HH:mm a dd/MM/yyyy' }}</div>
-        
-          <label>modified</label>
-          <div>{{ userModel.modifiedAt | date: 'HH:mm a dd/MM/yyyy' }}</div>
-    </main>
-
-    <footer>
-      <button (click)="changeViewState(ViewState.EDIT)">edit</button>
-      <button (click)="changeViewState(ViewState.DELETE)">delete</button>
-    </footer>
-  </div>
-
-  <user-form *ngIf="viewState === ViewState.EDIT" [userModel]="userModel"></user-form>
+  <user-view *ngIf="componentState !== ComponentState.FORM" [userModel]="userModel" [reversedIndex]="reversedIndex"></user-view>
+  <user-form *ngIf="componentState === ComponentState.FORM" [userModel]="userModel"></user-form>
+  
 </section>

@@ -1,0 +1,34 @@
+<div class="user-view">
+    <header>
+      <div>
+        <label class="">[{{ reversedIndex }}] firstname</label>
+        <strong>{{ userModel.firstName }}</strong>
+      </div>
+    
+      <div>
+        <label>lastname</label>
+        <strong data-karma="lastName">{{ userModel.lastName }}</strong>
+      </div>
+
+      <status [state]="userModel.status"></status>
+    </header>
+
+    <main>  
+          <label>_id</label>
+          <div>{{ userModel._id }}</div>
+        
+          <label>telephone number</label>
+          <div>{{ userModel.telephoneNumber }}</div>
+        
+          <label>created</label>
+          <div>{{ userModel.createdAt | date: 'HH:mm a dd/MM/yyyy' }}</div>
+        
+          <label>modified</label>
+          <div>{{ userModel.modifiedAt | date: 'HH:mm a dd/MM/yyyy' }}</div>
+    </main>
+
+    <footer>
+      <button (click)="changeComponentState(ComponentState.FORM)">edit</button>
+      <button (click)="changeComponentState(ComponentState.DELETE)">delete</button>
+    </footer>
+  </div>

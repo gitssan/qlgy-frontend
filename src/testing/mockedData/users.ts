@@ -1,6 +1,6 @@
  /* istanbul ignore file */
  
- import { ApplicationState, IUserModel, UserStatus, ViewState } from '@app/generic/qlgy.models';
+ import { ApplicationState, IUserModel, UserStatus, ComponentState, IUserSelected } from '@app/generic/qlgy.models';
 
 export const userIndy: IUserModel = {
   _id: 2,
@@ -10,6 +10,11 @@ export const userIndy: IUserModel = {
   telephoneNumber: '+31619610308',
   status: UserStatus.PUBLIC,
 } as IUserModel;
+
+export const userIndyFocusedModel: IUserSelected = {
+  userModel: userIndy,
+  componentState: ComponentState.VIEW
+}
 
 export const userIndyPrivate: IUserModel = {
   _id: 2,
@@ -79,7 +84,7 @@ export const users: IUserModel[] = [
 ] as IUserModel[];
 
 export const initialState = {
-  viewState: ViewState.VIEW,
+  componentState: ComponentState.VIEW,
   usersModel: users,
   userFocused: null
 } as ApplicationState;

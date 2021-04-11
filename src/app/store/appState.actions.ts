@@ -1,12 +1,10 @@
  /* istanbul ignore file */
  
-export const WAKE_UP_APP = 'wakeUpApp';
-export const APP_INIT_FLOW = 'appInitFlow';
 export const APP_RESET = 'appReset';
 
-export const LOAD_USERS = 'loadUsers';
-export const LOAD_USERS_SUCCESS = 'loadUsersSuccess';
-export const LOAD_USERS_ERROR = 'loadUsersError';
+export const USERS_LOAD = 'loadUsers';
+export const USERS_LOAD_SUCCESS = 'loadUsersSuccess';
+export const USERS_LOAD_ERROR = 'loadUsersError';
 
 export const USER_EDIT = 'userEdit';
 export const USER_EDIT_SUCCESS = 'userEditSuccess';
@@ -20,5 +18,11 @@ export const USER_DELETE = 'userDelete';
 export const USER_DELETE_SUCCESS = 'userDeleteSuccess';
 export const USER_DELETE_ERROR = 'userDeleteError';
 
-export const USER_VIEW_STATE = 'userViewState';
-export const MAIN_VIEW_STATE = 'mainViewState';
+export const USER_COMPONENT_STATE = 'userComponentState';
+export const USER_COMPONENT_TRANSIENT_STATE = 'userViewTransientState';
+
+export const MAIN_COMPONENT_NEW_ENTRY_STATE = 'mainComponentNewEntryState';
+export const MAIN_COMPONENT_STATE_RESET = 'userComponentStateReset';
+
+export const MAIN_USERS_RELOAD = 'mainUsersReload';
+export const MAIN_USERS_RELOAD_ERROR = 'mainUsersReloadError';

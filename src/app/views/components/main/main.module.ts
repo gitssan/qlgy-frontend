@@ -6,9 +6,10 @@ import { UserComponent } from '@app/components/user/user.component';
 import { StatusComponent } from '@app/components/status/status.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { UserFormComponent } from '@app/components/user-form/user-form.component';
+import { UserViewComponent } from '@app/components/user-view/user-view.component';
 
 @NgModule({
   imports: [CommonModule, HomeRoutingModule, ReactiveFormsModule],
-  declarations: [MainComponent, UserComponent, StatusComponent, UserFormComponent],
+  declarations: [MainComponent, UserComponent, StatusComponent, UserFormComponent, UserViewComponent],
 })
 export class MainModule {}

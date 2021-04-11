@@ -1,7 +1,7 @@
 import { Action } from '@ngrx/store';
 
 export interface IUserModel {
-  _id: number;
+  _id: UserId;
   firstName: string;
   lastName: string;
   emailAddress: string;
@@ -12,30 +12,36 @@ export interface IUserModel {
   status: UserStatus;
 }
 
+type UserId = number | UserModelType;
+
+export enum UserModelType {
+  NEW = 'new'
+}
+
 export enum UserStatus {
   PRIVATE = 'private',
   PUBLIC = 'public',
 }
 
-export enum ViewState {
+export enum ComponentState {
+  FORM = 'form',
   VIEW = 'view',
-  EDIT = 'edit',
   NEW = 'new',
   DELETE = 'delete',
-  SELECT = 'select',
   CANCEL = 'cancel',
-  USER_EDIT = 'user_edit',
-  USER_NEW = 'user_new'
+  USER_EDIT = 'userEdit',
+  USER_NEW = 'userNew',
+  TRANSIENT = 'transient',
+  ROLLBACK = 'rollback'
 }
 
 export interface IUserSelected {
   userModel: IUserModel;
-  rollbackUserModel: IUserModel;
-  viewState: ViewState;
+  componentState: ComponentState;
 }
 
 export interface ApplicationState {
-  viewState: ViewState;
+  componentState: ComponentState;
   usersModel: IUserModel[];
   userFocused: IUserSelected;
 }
@@ -43,3 +49,11 @@ export interface ApplicationState {
 export interface IQlgyAction extends Action {
   payload: {};
 }
+
+export const initialState = {
+  componentState: ComponentState.VIEW,
+  usersModel: [],
+  userFocused: null
+} as ApplicationState;
+
+export const newEntryUsermodel: IUserModel = { _id: UserModelType.NEW } as IUserModel;

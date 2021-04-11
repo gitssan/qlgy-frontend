@@ -12,7 +12,6 @@ export class HeaderComponent {
   public amount: number;
   constructor(public store: Store<{ appState: ApplicationState }>) {
     this.store.pipe(select(usersLengthSelector)).subscribe((state) => {
-      console.log('usersLengthSelector', state)
       this.amount = state;
     });
   }
