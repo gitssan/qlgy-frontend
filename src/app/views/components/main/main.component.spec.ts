@@ -49,7 +49,7 @@ describe('MainComponent', () => {
     const dispatchObject = { type: MAIN_COMPONENT_NEW_ENTRY_STATE };
 
     spyOn(component, 'changeComponentState').and.callThrough();
-    component.changeComponentState(ComponentState.NEW);
+    component.changeComponentState(ComponentState.USER_NEW);
     expect(component.changeComponentState).toHaveBeenCalled();
     expect(storeSpy).toHaveBeenCalledWith(jasmine.objectContaining(dispatchObject));
   });

@@ -1,7 +1,7 @@
 import { Action } from '@ngrx/store';
 
 export interface IUserModel {
-  _id: UserId;
+  _id: userId;
   firstName: string;
   lastName: string;
   emailAddress: string;
@@ -12,7 +12,7 @@ export interface IUserModel {
   status: UserStatus;
 }
 
-type UserId = number | UserModelType;
+type userId = number | UserModelType;
 
 export enum UserModelType {
   NEW = 'new'
@@ -26,7 +26,6 @@ export enum UserStatus {
 export enum ComponentState {
   FORM = 'form',
   VIEW = 'view',
-  NEW = 'new',
   DELETE = 'delete',
   CANCEL = 'cancel',
   USER_EDIT = 'userEdit',

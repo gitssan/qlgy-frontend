@@ -1,6 +1,6 @@
  /* istanbul ignore file */
  
- import { ApplicationState, IUserModel, UserStatus, ComponentState, IUserSelected } from '@app/generic/qlgy.models';
+ import { ApplicationState, IUserModel, UserStatus, ComponentState, IUserSelected, UserModelType } from '@app/generic/qlgy.models';
 
 export const userIndy: IUserModel = {
   _id: 2,
@@ -35,6 +35,7 @@ export const userInvalid: IUserModel = {
 } as IUserModel;
 
 export const userNew: IUserModel = {
+  _id: UserModelType.NEW,
   firstName: 'Indy',
   lastName: 'Cat',
   emailAddress: 'Qlgy36393639@gmail.com',

@@ -22,7 +22,7 @@ describe('UserComponent', () => {
         {
           initialState,
           selectors: [
-            { selector: usersSelector, value: users },
+            { selector: usersSelector, value: null },
             { selector: singleUserSelector, value: { componentState: ComponentState.VIEW, userModel: userIndy } },
             { selector: mainComponentStateSelector, value: ComponentState.VIEW }]
         }
@@ -37,6 +37,16 @@ describe('UserComponent', () => {
     fixture.detectChanges();
   });
 
+  xit('should have not selected state based on singleUserSelector not returning valid user', () => {
+    const mockedStateFocusedSelectorNull = store.overrideSelector(singleUserSelector, null);
+    // setState doesnt work either
+    // store.setState({ userFocused: null } as ApplicationState);
+    fixture.detectChanges();
+
+    expect(component.selected).toBeFalsy();
+    expect(component.componentState).toBe(ComponentState.VIEW);
+  });
+
   it(`changeComponentState should have been called with ComponentState.EDIT and dispatch store`, () => {
     const changeComponentStateSpy = spyOn(component, 'changeComponentState').and.callThrough();
     const storeSpy = spyOn(component.store, 'dispatch').and.callThrough();
@@ -47,14 +57,7 @@ describe('UserComponent', () => {
     expect(storeSpy).toHaveBeenCalledWith(jasmine.objectContaining(dispatchObject));
   });
 
-  xit('should have not selected state based on singleUserSelector not returning valid user', () => {
-    // const mockedStateFocusedSelectorNull = store.overrideSelector(singleUserSelector, null);
-    store.setState({ userFocused: null } as ApplicationState);
-    fixture.detectChanges();
 
-    expect(component.selected).toBeFalsy();
-    expect(component.componentState).toBe(ComponentState.VIEW);
-  });
 
   it('should have ComponentState.VIEW when userModel is set', () => {
     component.userModel = userIndy;

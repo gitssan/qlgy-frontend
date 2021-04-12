@@ -33,6 +33,7 @@ export class UserComponent extends AbstractView implements OnInit {
     }
 
     this.store.pipe(select(singleUserSelector, { _id: this.userModel?._id })).subscribe((state: IUserSelected) => {
+      console.log('singleUserSelector', this.userModel?._id, state);
       if (state) {
         this.componentState = state.componentState;
         this.userModel = state.userModel;
