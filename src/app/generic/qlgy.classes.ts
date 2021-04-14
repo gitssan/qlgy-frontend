@@ -25,9 +25,12 @@ export abstract class AbstractView {
 
   public jumpTable: {} = {
     [ComponentState.DELETE]: (componentState: ComponentState, userModel: IUserModel) => {
-      if (confirm(USER_DELETE_FEEDBACK)) {
-        this.store.dispatch({ type: USER_DELETE, payload: { userModel } });
-      }
+      //timeout to selected user > visual border feedback
+      setTimeout(() => {
+        if (confirm(USER_DELETE_FEEDBACK)) {
+          this.store.dispatch({ type: USER_DELETE, payload: { userModel } });
+        }
+      });
     },
     [ComponentState.TRANSIENT]: (componentState: ComponentState, userModel: IUserModel) => {
       this.store.dispatch({ type: USER_COMPONENT_TRANSIENT_STATE, payload: { componentState: ComponentState.FORM, userModel } });
@@ -36,6 +39,7 @@ export abstract class AbstractView {
       if (this.componentState === ComponentState.USER_EDIT) {
         this.store.dispatch({ type: USER_COMPONENT_STATE, payload: { componentState: ComponentState.ROLLBACK, userModel: this.userModelRollback } });
       } else if (this.componentState === ComponentState.USER_NEW) {
+        console.log('else path')
         this.store.dispatch({ type: MAIN_COMPONENT_STATE_RESET });
       }
     },

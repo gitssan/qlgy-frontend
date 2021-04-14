@@ -32,13 +32,12 @@ export class UserComponent extends AbstractView implements OnInit {
       this.componentState = ComponentState.FORM;
     }
 
-    this.store.pipe(select(singleUserSelector, { _id: this.userModel?._id })).subscribe((state: IUserSelected) => {
-      console.log('singleUserSelector', this.userModel?._id, state);
+    this.store.pipe(select(singleUserSelector, { _id: this.userModel._id })).subscribe((state: IUserSelected) => {
       if (state) {
         this.componentState = state.componentState;
         this.userModel = state.userModel;
         this.selected = true;
-      } else if (this.selected) {
+      } else {
         this.componentState = ComponentState.VIEW;
         this.selected = false;
       }
