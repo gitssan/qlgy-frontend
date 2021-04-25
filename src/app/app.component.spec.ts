@@ -3,7 +3,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
 import { provideMockStore, MockStore } from '@ngrx/store/testing';
 import { initialState } from 'src/testing/mockedData/users';
-import { LOAD_USERS } from './store/appState.actions';
+import { USERS_LOAD } from './store/state/appState.actions';
 
 describe('AppComponent', () => {
   let store: MockStore;
@@ -18,7 +18,7 @@ describe('AppComponent', () => {
     }).compileComponents();
 
     store = TestBed.inject(MockStore);
-    // const mockedState = store.overrideSelector(userFocusedSelector, { viewState: ViewState.VIEW, userModel: userIndy } as IUserSelected);
+    // const mockedState = store.overrideSelector(userFocusedSelector, { componentState: ComponentState.VIEW, userModel: userIndy } as IUserSelected);
 
     fixture = TestBed.createComponent(AppComponent);
     component = fixture.componentInstance;
@@ -30,7 +30,7 @@ describe('AppComponent', () => {
     const storeSpy = spyOn(component.store, 'dispatch').and.callThrough();
     component.ngOnInit();
     expect(spyOnInit).toHaveBeenCalled();
-    const dispatchObject = { type: LOAD_USERS };
+    const dispatchObject = { type: USERS_LOAD };
     expect(storeSpy).toHaveBeenCalledWith(jasmine.objectContaining(dispatchObject));
   });
 });

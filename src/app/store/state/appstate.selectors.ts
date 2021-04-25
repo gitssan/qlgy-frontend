@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 
+import { ApplicationState } from '@app/generic/qlgy.models';
 import { createFeatureSelector, createSelector } from '@ngrx/store';
-import { ApplicationState } from '../generic/qlgy.models';
 
 const getAppState = createFeatureSelector<ApplicationState>('appState');
 
@@ -22,4 +22,8 @@ export const singleUserSelector = createSelector(getAppState, (state: Applicatio
   if (state.userFocused?.userModel._id === _id) {
     return state.userFocused;
   }
+});
+
+export const feedbackSelector = createSelector(getAppState, (state: ApplicationState) => {
+  return state.feedback;
 });

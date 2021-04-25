@@ -2,13 +2,14 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 import { HttpClient } from '@angular/common/http';
 import { QlgyService } from './glgy.service';
-import { users, userNew, nonExistentUserId, userIndy } from 'src/testing/mockedData/users';
+import { users, userNew, nonExistentUserId, userIndy, usersJsonString, usersJson } from 'src/testing/mockedData/users';
 import { USER_NOT_FOUND_FEEDBACK, USER_SUCCESSFULLY_ADDED_FEEDBACK, USER_SUCCESSFULLY_DELETED_FEEDBACK, USER_SUCCESSFULLY_MODIFIED_FEEDBACK } from '@app/generic/qlgy.constants';
 
 describe('QlgyService', () => {
   let httpClient: HttpClient;
   let httpTestingController: HttpTestingController;
   let service: QlgyService;
+  let mockLocalStorage: any;
   const usersLength = users.length;
 
   beforeEach(() => {
@@ -23,6 +24,48 @@ describe('QlgyService', () => {
     httpTestingController = TestBed.inject(HttpTestingController);
     service = TestBed.inject(QlgyService);
     service.setUsersData([...users]);
+
+    // var store = {};
+    // spyOn(localStorage, 'getItem').and.callFake((key: string): String => {
+    //   console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>', key, store[key]);
+    //   return store[key] || null;
+    // });
+    // spyOn(localStorage, 'removeItem').and.callFake((key: string): void => {
+    //   delete store[key];
+    // });
+    // spyOn(localStorage, 'setItem').and.callFake((key: string, value: string): string => {
+    //   return store[key] = <string>value;
+    // });
+    // spyOn(localStorage, 'clear').and.callFake(() => {
+    //   store = {};
+    // });
+
+    // localStorage.setItem('usersData', usersJsonString);
+  });
+
+  it('should init usersData from localStorage', () => {
+
+    const store = {};
+    spyOn(localStorage, 'getItem').and.callFake((key: string): String => {
+      return store[key] || null;
+    });
+    spyOn(localStorage, 'setItem').and.callFake((key: string, value: string): string => {
+      return store[key] = <string>value;
+    });
+
+    localStorage.setItem("usersData", usersJsonString);
+    service.init();
+    expect(service.usersData).toEqual(JSON.parse(usersJsonString));
+  });
+
+  it('should not init usersData from localStorage', () => {
+    service.usersData = null;
+    spyOn(localStorage, 'getItem').and.callFake((key: string): String => {
+      return null;
+    });
+
+    service.init();
+    expect(service.usersData).toEqual(null);
   });
 
   it('should not hasUserData on load', () => {

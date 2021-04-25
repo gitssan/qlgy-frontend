@@ -1,8 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
-import { AbstractView } from '@app/generic/qlgy.classes';
-import { ApplicationState, IUserModel, ViewState } from '@app/generic/qlgy.models';
-import { MAIN_VIEW_STATE } from '@app/store/appState.actions';
-import { appViewStateSelector, usersSelector } from '@app/store/appstate.selectors';
+import { Router } from '@angular/router';
+import { ApplicationState, IUserModel, ComponentState, ROUTE_NEW } from '@app/generic/qlgy.models';
+import { mainComponentStateSelector, usersSelector } from '@app/store/state/appstate.selectors';
 import { select, Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
 
@@ -12,36 +11,32 @@ import { Observable, Subscription } from 'rxjs';
   styleUrls: ['./main.component.scss'],
 })
 export class MainComponent implements OnDestroy {
-  ViewState = ViewState;
+  ComponentState = ComponentState;
 
-  public viewState: ViewState = ViewState.VIEW;
+  public componentState: ComponentState = ComponentState.VIEW;
   public usersModel$: Observable<IUserModel[]>;
   public viewFeedbackError: boolean;
   public success: boolean;
   public users: object[];
-  public usersModel: IUserModel[];
+  public subscriptions: { [key: string]: any } = {};
+  // public usersModel: IUserModel[];
 
   private userModelSubscription: Subscription;
-  private appViewStateSubscription: Subscription;
+  private appComponentStateSubscription: Subscription;
 
-  constructor(public store: Store<{ getAppState: ApplicationState }>) {
+  constructor(public store: Store<{ getAppState: ApplicationState }>, private router: Router) {
     this.usersModel$ = this.store.pipe(select(usersSelector));
-    this.userModelSubscription = this.store.select(usersSelector).subscribe((state: IUserModel[]) => {
-      this.usersModel = state;
-      this.viewState = ViewState.VIEW;
-    });
-
-    this.appViewStateSubscription = this.store.select(appViewStateSelector).subscribe((state: ViewState) => {
-      this.viewState = state;
+    this.subscriptions.mainComponentStateSelector = this.store.select(mainComponentStateSelector).subscribe((state: ComponentState) => {
+      this.componentState = state;
     });
   }
 
-  public changeViewState(viewState: ViewState) {
-      this.store.dispatch({ type: MAIN_VIEW_STATE, payload: viewState });
+  changeRoute() {
+    this.router.navigate([ROUTE_NEW]);
   }
 
   ngOnDestroy() {
     this.userModelSubscription.unsubscribe();
-    this.appViewStateSubscription.unsubscribe();
+    this.appComponentStateSubscription.unsubscribe();
   }
 }

@@ -1,12 +1,13 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
-import { initialState } from '@app/store/appState.reducer';
 import { UserFormComponent } from './user-form.component';
-import { IUserModel, IUserSelected, ViewState } from '@app/generic/qlgy.models';
+import { IUserSelected, ComponentState, IUserModel, UserStatus } from '@app/generic/qlgy.models';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MAIN_VIEW_STATE, USER_EDIT, USER_NEW, USER_VIEW_STATE  } from '@app/store/appState.actions';
-import { appViewStateSelector, userFocusedSelector, usersSelector } from '@app/store/appstate.selectors';
-import { userIndy, userInvalid, users } from '@testing/mockedData/users';
+import { mainComponentStateSelector, singleUserSelector, usersSelector } from '@app/store/appstate.selectors';
+import { userIndy, userIndyPrivate, userInvalid, userNew, users } from '@testing/mockedData/users';
+import { initialState } from '@app/generic/qlgy.models';
+import { MAIN_COMPONENT_STATE_RESET, USER_COMPONENT_STATE, USER_DELETE, USER_EDIT, } from '@app/store/state/appState.actions';
+import { USER_DELETE_FEEDBACK } from '@app/generic/qlgy.constants';
 
 describe('UserFormComponent', () => {
   let component: UserFormComponent;
@@ -22,25 +23,25 @@ describe('UserFormComponent', () => {
 
     store = TestBed.inject(MockStore);
     const mockedStateUsersSelector = store.overrideSelector(usersSelector, users);
-    const mockedStateFocusedSelector = store.overrideSelector(userFocusedSelector, { viewState: ViewState.VIEW, userModel: userIndy } as IUserSelected);
-    const mockedViewStateSelector = store.overrideSelector(appViewStateSelector, ViewState.VIEW as ViewState);
+    const mockedStateFocusedSelector = store.overrideSelector(singleUserSelector, { componentState: ComponentState.VIEW, userModel: userIndy } as IUserSelected);
+    const mockedComponentStateSelector = store.overrideSelector(mainComponentStateSelector, ComponentState.VIEW as ComponentState);
 
     fixture = TestBed.createComponent(UserFormComponent);
     component = fixture.componentInstance;
   });
 
-  it(`[new] should have empty userModel object`, () => {
-    component.userModel = null;
+  it(`[new] should have an invalid form`, () => {
+    component.userModel = userInvalid;
     fixture.detectChanges();
-    const spyOnInit = spyOn(component, 'ngOnInit').and.callThrough();
+    const onInitSpy = spyOn(component, 'ngOnInit').and.callThrough();
     component.ngOnInit();
-    
+    expect(onInitSpy).toHaveBeenCalled();
     expect(component.userForm.valid).toBe(false);
   });
 
   it(`[new] should render ${userIndy.lastName} in lastName input`, () => {
-    component.userModel = userIndy as IUserModel;
-    component.viewState = ViewState.NEW;
+    component.userModel = userIndy;
+    component.componentState = ComponentState.USER_NEW;
     fixture.detectChanges();
 
     const compiled = fixture.debugElement.nativeElement;
@@ -48,21 +49,17 @@ describe('UserFormComponent', () => {
   });
 
   it(`[new] should call handleForm with valid form and dispatch Store`, () => {
-    component.userModel = userIndy as IUserModel;
+    component.userModel = userIndy;
     fixture.detectChanges();
-    component.viewState = ViewState.NEW;
+    component.componentState = ComponentState.USER_NEW;
 
-    const handleFormSpy = spyOn(component, 'handleForm').and.callThrough();
-    const storeSpy = spyOn(component.store, 'dispatch').and.callThrough();
+    const changeComponentStateSpy = spyOn(component, 'changeComponentState').and.callThrough();
     component.handleForm();
-    const dispatchObject = { type: USER_NEW };
-    expect(handleFormSpy).toHaveBeenCalled();
-
-    expect(storeSpy).toHaveBeenCalledWith(jasmine.objectContaining(dispatchObject));
+    expect(changeComponentStateSpy).toHaveBeenCalledWith(ComponentState.USER_NEW, component.userModel);
   });
 
   it(`[edit] should not submit invalid form`, () => {
-    component.userModel = userInvalid as IUserModel;
+    component.userModel = userInvalid;
     fixture.detectChanges();
 
     const handleFormSpy = spyOn(component, 'handleForm').and.callThrough();
@@ -72,50 +69,144 @@ describe('UserFormComponent', () => {
   });
 
   it(`[edit] should render ${userIndy.lastName} in lastName input`, () => {
-    component.userModel = userIndy as IUserModel;
+    component.userModel = userIndy;
     fixture.detectChanges();
 
     const compiled = fixture.debugElement.nativeElement;
     expect(compiled.querySelector('[formControlName=lastName]').value).toBe(userIndy.lastName);
   });
 
-  it(`[edit] should call handleForm with valid form and dispatch Store`, () => {
-    component.userModel = userIndy as IUserModel;
+  it(`[edit] should call handleForm with valid form and changeComponentState with USER_EDIT`, () => {
+    component.userModel = userIndy;
     fixture.detectChanges();
+    component.componentState = ComponentState.USER_EDIT;
 
-    const handleFormSpy = spyOn(component, 'handleForm').and.callThrough();
-    const storeSpy = spyOn(component.store, 'dispatch').and.callThrough();
-
+    const changeComponentStateSpy = spyOn(component, 'changeComponentState').and.callThrough();
     component.handleForm();
+    expect(changeComponentStateSpy).toHaveBeenCalledWith(ComponentState.USER_EDIT, component.userModel);
+  });
+
+  it(`[new] should call changeComponentState and jumpTo dispatch Store based on cancel`, () => {
+    component.userModel = userIndy;
+    fixture.detectChanges();
+
+    const changeComponentStateSpy = spyOn(component, 'changeComponentState').and.callThrough();
+    const jumpDispatchStoreSpy = spyOn(component, 'jumpDispatchStore').and.callThrough();
+    component.changeComponentState(ComponentState.CANCEL);
+
+    expect(changeComponentStateSpy).toHaveBeenCalled();
+    expect(component.jumpDispatchStore).toHaveBeenCalledWith(ComponentState.CANCEL, component.userModel);
+
+    expect(component.jumpTable[ComponentState.CANCEL]).toBeDefined();
+  });
+
+  it(`should have jumpTable object with accoring keys`, () => {
+    component.userModel = userIndy;
+    fixture.detectChanges();
+
+    expect(component.jumpTable[ComponentState.CANCEL]).toBeDefined();
+    expect(component.jumpTable[ComponentState.USER_EDIT]).toBeDefined();
+    expect(component.jumpTable[ComponentState.USER_NEW]).toBeDefined();
+    expect(component.jumpTable[ComponentState.CANCEL]).toBeDefined();
+    expect(component.jumpTable[ComponentState.DELETE]).toBeDefined();
+    expect(component.jumpTable[ComponentState.FORM]).toBeDefined();
+    expect(component.jumpTable[ComponentState.TRANSIENT]).toBeDefined();
+
+    // error > USER_EDIT does not resolve
+    // const jumpDispatchStoreSpy = spyOn(component.jumpTable, USER_EDIT).and.callThrough();
+
+    const storeSpy = spyOn(component.store, 'dispatch').and.callThrough();
+    component.jumpTable[ComponentState.USER_EDIT](ComponentState.USER_EDIT, component.userModel);
+
     const dispatchObject = { type: USER_EDIT };
-    expect(handleFormSpy).toHaveBeenCalled();
-    // expect(component.userForm.valid).toBe(true);
     expect(storeSpy).toHaveBeenCalledWith(jasmine.objectContaining(dispatchObject));
   });
 
-  it(`[edit] should dispatch Store based on ViewState.EDIT`, () => {
-    component.userModel = userIndy as IUserModel;
+
+  it(`should call cancel from jumpTable, if path`, fakeAsync(() => {
+    component.componentState = ComponentState.USER_EDIT;
+    const storeSpy = spyOn(component.store, 'dispatch').and.callThrough();
+    component.jumpTable[ComponentState.CANCEL](ComponentState.CANCEL, component.userModel);
+
+    const dispatchObject = { type: USER_COMPONENT_STATE };
+    expect(storeSpy).toHaveBeenCalledWith(jasmine.objectContaining(dispatchObject));
+  }));
+
+  it(`should call cancel from jumpTable, else path`, () => {
+    component.componentState = ComponentState.USER_NEW;
+    const storeSpy = spyOn(component.store, 'dispatch').and.callThrough();
+    component.jumpTable[ComponentState.CANCEL](ComponentState.CANCEL, component.userModel);
+
+    const dispatchObject = { type: MAIN_COMPONENT_STATE_RESET };
+    expect(storeSpy).toHaveBeenCalledWith(jasmine.objectContaining(dispatchObject));
+  });
+
+  it(`should call jumpDispatchStore`, () => {
+    component.userModel = userIndy;
+    fixture.detectChanges();
+    const jumpDispatchStoreSpy = spyOn(component, 'jumpDispatchStore').and.callThrough();
+    component.jumpDispatchStore(ComponentState.CANCEL, component.userModel);
+    expect(jumpDispatchStoreSpy).toHaveBeenCalledWith(ComponentState.CANCEL, component.userModel);
+    expect(component.jumpTable[ComponentState.CANCEL]).toBeDefined();
+  });
+
+  it(`should dispatch delete action from jumpTable, after confirming`, fakeAsync(() => {
+    component.componentState = ComponentState.DELETE;
+    const storeSpy = spyOn(component.store, 'dispatch').and.callThrough();
+    const confirm = spyOn(window, 'confirm').and.callThrough().and.returnValue(true);
+    component.jumpTable[ComponentState.DELETE](ComponentState.DELETE, component.userModel);
+    tick();
+    expect(confirm).toHaveBeenCalled();
+    const dispatchObject = { type: USER_DELETE };
+    expect(storeSpy).toHaveBeenCalledWith(jasmine.objectContaining(dispatchObject));
+  }));
+
+  it(`should not dispatch delete action from jumpTable, confirm cancelled`, fakeAsync(() => {
+    component.componentState = ComponentState.DELETE;
+    const storeSpy = spyOn(component.store, 'dispatch').and.callThrough();
+    const confirm = spyOn(window, 'confirm').and.callThrough().and.returnValue(false);
+    component.jumpTable[ComponentState.DELETE](ComponentState.DELETE, component.userModel);
+    tick();
+    expect(confirm).toHaveBeenCalled();
+    expect(storeSpy).not.toHaveBeenCalled();
+  }));
+
+  it(`[edit] should trigger status form field change`, fakeAsync(() => {
+    component.userModel = userIndy;
     fixture.detectChanges();
 
-    const cancelSpy = spyOn(component, 'changeViewState').and.callThrough();
-    const storeSpy = spyOn(component.store, 'dispatch').and.callThrough();
-    component.changeViewState(ViewState.CANCEL);
-    const dispatchObject = { type: USER_VIEW_STATE };
-    expect(cancelSpy).toHaveBeenCalled();
-    // expect(component.userForm.valid).toBe(true);
-    expect(storeSpy).toHaveBeenCalledWith(jasmine.objectContaining(dispatchObject));
-  });
+    const changeComponentStateSpy = spyOn(component, 'changeComponentState').and.callThrough();
 
-  it(`[edit] should dispatch Store based on ViewState.NEW`, () => {
-    //component.userModel = userIndy as IUserModel;
+    component.userForm.get('status').setValue(UserStatus.PRIVATE);
+    component.userForm.get('status').updateValueAndValidity({ emitEvent: true });
+    fixture.detectChanges();
+    tick();
+
+    const userModel: IUserModel = { ...component.userModel, ...component.userForm.value } as IUserModel;
+    expect(changeComponentStateSpy).toHaveBeenCalledWith(ComponentState.TRANSIENT, userModel);
+  }));
+
+  it(`[new] should set ComponentState.NEW based on _id: UserModelType.NEW`, fakeAsync(() => {
+    component.userModel = userNew;
+    fixture.detectChanges();
+    const onInitSpy = spyOn(component, 'ngOnInit').and.callThrough();
+    component.ngOnInit();
+    expect(onInitSpy).toHaveBeenCalled();
+    expect(component.componentState).toBe(ComponentState.USER_NEW);
+  }));
+
+  it(`[new] should call changeComponentState and jumpTo dispatch Store based on cancel`, () => {
+    component.userModel = userIndy;
     fixture.detectChanges();
 
-    const cancelSpy = spyOn(component, 'changeViewState').and.callThrough();
-    const storeSpy = spyOn(component.store, 'dispatch').and.callThrough();
-    component.changeViewState(ViewState.CANCEL);
-    const dispatchObject = { type: USER_VIEW_STATE };
-    expect(cancelSpy).toHaveBeenCalled();
-    // expect(component.userForm.valid).toBe(true);
-    expect(storeSpy).toHaveBeenCalledWith(jasmine.objectContaining(dispatchObject));
+    const changeComponentStateSpy = spyOn(component, 'changeComponentState').and.callThrough();
+    const jumpDispatchStoreSpy = spyOn(component, 'jumpDispatchStore').and.callThrough();
+    component.changeComponentState(ComponentState.CANCEL);
+
+    expect(changeComponentStateSpy).toHaveBeenCalled();
+    expect(component.jumpDispatchStore).toHaveBeenCalledWith(ComponentState.CANCEL, component.userModel);
+
+    expect(component.jumpTable[ComponentState.CANCEL]).toBeDefined();
   });
+
 });

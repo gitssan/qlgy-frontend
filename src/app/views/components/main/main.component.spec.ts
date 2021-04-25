@@ -1,14 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { ViewState, IUserSelected } from '@app/generic/qlgy.models';
+import { ComponentState, IUserSelected } from '@app/generic/qlgy.models';
 import { provideMockStore, MockStore } from '@ngrx/store/testing';
 import { initialState } from 'src/testing/mockedData/users';
 import { MainComponent } from './main.component';
-import { userFocusedSelector, usersSelector, appViewStateSelector } from '@app/store/appstate.selectors';
-import { MAIN_VIEW_STATE } from '@app/store/appState.actions';
+import { singleUserSelector, usersSelector, mainComponentStateSelector } from '@app/store/appstate.selectors';
 import { userIndy, users } from '@testing/mockedData/users';
-import { UserComponent } from '@app/components/user/user.component';
-import { StatusComponent } from '@app/components/status/status.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MAIN_COMPONENT_NEW_ENTRY_STATE } from '@app/store/state/appState.actions';
+import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('MainComponent', () => {
 
@@ -18,15 +17,16 @@ describe('MainComponent', () => {
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
+      schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
       imports: [ReactiveFormsModule],
       providers: [provideMockStore({ initialState })],
-      declarations: [MainComponent, UserComponent, StatusComponent],
+      declarations: [MainComponent],
     }).compileComponents();
-
+  
     store = TestBed.inject(MockStore);
     const mockedStateUsersSelector = store.overrideSelector(usersSelector, users);
-    const mockedStateFocusedSelector = store.overrideSelector(userFocusedSelector, { viewState: ViewState.VIEW, userModel: userIndy } as IUserSelected);
-    const mockedViewStateSelector = store.overrideSelector(appViewStateSelector, ViewState.VIEW as ViewState);
+    const mockedStateFocusedSelector = store.overrideSelector(singleUserSelector, { componentState: ComponentState.VIEW, userModel: userIndy } as IUserSelected);
+    const mockedComponentStateSelector = store.overrideSelector(mainComponentStateSelector, ComponentState.VIEW as ComponentState);
 
     fixture = TestBed.createComponent(MainComponent);
     component = fixture.componentInstance;
@@ -39,18 +39,18 @@ describe('MainComponent', () => {
     expect(component.usersModel.length).toBe(4);
   });
 
-  it('should have ViewState VIEW', () => {
-    expect(component.viewState).toEqual(ViewState.VIEW);
+  it('should have ComponentState VIEW', () => {
+    expect(component.componentState).toEqual(ComponentState.VIEW);
   });
 
-  it(`should have ViewState ${ViewState.VIEW}`, () => {
+  it(`should have ComponentState ${ComponentState.VIEW}`, () => {
 
     const storeSpy = spyOn(component.store, 'dispatch').and.callThrough();
-    const dispatchObject = { type: MAIN_VIEW_STATE };
+    const dispatchObject = { type: MAIN_COMPONENT_NEW_ENTRY_STATE };
 
-    spyOn(component, 'changeViewState').and.callThrough();
-    component.changeViewState(ViewState.NEW);
-    expect(component.changeViewState).toHaveBeenCalled();
+    spyOn(component, 'changeComponentState').and.callThrough();
+    component.changeComponentState(ComponentState.USER_NEW);
+    expect(component.changeComponentState).toHaveBeenCalled();
     expect(storeSpy).toHaveBeenCalledWith(jasmine.objectContaining(dispatchObject));
   });
 });

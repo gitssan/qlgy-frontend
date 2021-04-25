@@ -1,0 +1,7 @@
+<section [ngClass]="{'feedback' : true}">
+    <div class="feedback-view">
+        <main>
+            <div *ngFor="let message of feedbackMessages$ | async" class="message message--success">{{ message }}</div>
+        </main>
+    </div>
+</section>

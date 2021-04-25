@@ -1,15 +1,29 @@
- /* istanbul ignore file */
- 
- import { ApplicationState, IUserModel, UserStatus, ViewState } from '@app/generic/qlgy.models';
+/* istanbul ignore file */
+
+import { ApplicationState, IUserModel, UserStatus, ComponentState, IUserSelected, UserModelType } from '@app/generic/qlgy.models';
 
 export const userIndy: IUserModel = {
-  _id: 2,
+  _id: 1,
   firstName: 'Indy',
   lastName: 'Cat',
   emailAddress: 'Qlgy36393639@gmail.com',
   telephoneNumber: '+31619610308',
   status: UserStatus.PUBLIC,
 } as IUserModel;
+
+export const userLeonie: IUserModel = {
+  _id: 3,
+  firstName: 'Leonie',
+  lastName: 'Cat1',
+  emailAddress: 'Qlgy36393639@gmail.com',
+  telephoneNumber: '+31619610308',
+  status: UserStatus.PRIVATE
+} as IUserModel;
+
+export const userIndyFocusedModel: IUserSelected = {
+  userModel: userIndy,
+  componentState: ComponentState.VIEW
+}
 
 export const userIndyPrivate: IUserModel = {
   _id: 2,
@@ -30,6 +44,7 @@ export const userInvalid: IUserModel = {
 } as IUserModel;
 
 export const userNew: IUserModel = {
+  _id: UserModelType.NEW,
   firstName: 'Indy',
   lastName: 'Cat',
   emailAddress: 'Qlgy36393639@gmail.com',
@@ -79,7 +94,17 @@ export const users: IUserModel[] = [
 ] as IUserModel[];
 
 export const initialState = {
-  viewState: ViewState.VIEW,
+  componentState: ComponentState.VIEW,
   usersModel: users,
   userFocused: null
 } as ApplicationState;
+
+export const usersJsonString = '[{"_id": 1, "firstName": "Indy","lastName": "Cat3","emailAddress": "Qlgy36393639@gmail.com","telephoneNumber": "+31619610308"}]';
+export const usersJson = [
+  {
+    "_id": 1,
+    "firstName": "Indy",
+    "lastName": "Cat3",
+    "emailAddress": "Qlgy36393639@gmail.com",
+    "telephoneNumber": "+31619610308",
+  }] as IUserModel[];

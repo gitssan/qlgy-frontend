@@ -26,3 +26,9 @@ export const MAIN_COMPONENT_STATE_RESET = 'userComponentStateReset';
 
 export const MAIN_USERS_RELOAD = 'mainUsersReload';
 export const MAIN_USERS_RELOAD_ERROR = 'mainUsersReloadError';
+
+export const FEEDBACK_NEW = 'feedbackNew'
+
+export const ROUTER_NAVIGATED_EFFECT = 'routerNavidatedEffect';
+
+export const FEEDBACK_OF_TYPE_ACTIONS = [USERS_LOAD_SUCCESS, USER_EDIT_SUCCESS, USER_NEW_SUCCESS, USER_DELETE_SUCCESS];

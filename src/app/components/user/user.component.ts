@@ -1,11 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ApplicationState, IUserModel, IUserSelected, UserStatus, ViewState } from '@app/generic/qlgy.models';
-import { userFocusedSelector } from '@app/store/appstate.selectors';
+import { ApplicationState, IUserModel, IUserSelected, UserModelType, ComponentState, userId } from '@app/generic/qlgy.models';
 import { select, Store } from '@ngrx/store';
-import { USER_DELETE, USER_VIEW_STATE } from '@app/store/appState.actions';
-import { USER_DELETE_FEEDBACK } from '@app/generic/qlgy.constants';
 import { AbstractView } from '@app/generic/qlgy.classes';
 import { FormBuilder } from '@angular/forms';
+import { Router } from '@angular/router';
+import { singleUserSelector } from '@app/store/state/appstate.selectors';
 
 @Component({
   selector: 'user',
@@ -14,29 +13,26 @@ import { FormBuilder } from '@angular/forms';
 })
 export class UserComponent extends AbstractView implements OnInit {
 
-  @Input() userModel: IUserModel = {} as IUserModel;
+  @Input() userModel: IUserModel;
   @Input() reversedIndex: number;
 
-  public selected: boolean = false;
+  public componentType: string;
+  public newEntryState: boolean;
 
-  constructor(public store: Store<{ appState: ApplicationState }>, public formBuilder: FormBuilder) {
-    super(store, formBuilder);
-    this.viewState = ViewState.VIEW;
+  constructor(public store: Store<{ appState: ApplicationState }>, public formBuilder: FormBuilder, public router: Router) {
+    super(store, formBuilder, router);
   }
 
   ngOnInit(): void {
-    this.store.pipe(select(userFocusedSelector, { _id: this.userModel._id })).subscribe((state: IUserSelected) => {
-
-      if (state && this.userModel._id === state.userModel?._id) {
-        console.log(state);
-        this.selected = true;
-        this.viewState = state.viewState;
+    this.init();
+    this.subscriptions.singleUserSelector = this.store.pipe(select(singleUserSelector, { _id: this.userModel._id })).subscribe((state: IUserSelected) => {
+      if (state) {
         this.userModel = state.userModel;
-        this.jumpDispatchStore(state.viewState, state.userModel);
-      } else {
-        this.selected = false;
-        this.viewState = ViewState.VIEW;
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.singleUserSelector.unsubscribe();
   }
 }
