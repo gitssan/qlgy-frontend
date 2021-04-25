@@ -20,15 +20,6 @@ export abstract class AbstractView {
   public componentState: ComponentState;
 
   @Input() userModel = { _id: UserModelType.NEW } as IUserModel;
-  // (data: IUserModel) {
-  //   if (data) {
-  //     this._userModel = data;
-  //   }
-  // }
-
-  // get userModel() {
-  //   return this._userModel;
-  // }
 
   public jumpTable: {} = {
     [ComponentState.DELETE]: (componentState: ComponentState, userModel: IUserModel) => {
