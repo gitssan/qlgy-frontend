@@ -6,7 +6,7 @@ import { MainComponent } from './main.component';
 import { singleUserSelector, usersSelector, mainComponentStateSelector } from '@app/store/appstate.selectors';
 import { userIndy, users } from '@testing/mockedData/users';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MAIN_COMPONENT_NEW_ENTRY_STATE } from '@app/store/appState.actions';
+import { MAIN_COMPONENT_NEW_ENTRY_STATE } from '@app/store/state/appState.actions';
 import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('MainComponent', () => {

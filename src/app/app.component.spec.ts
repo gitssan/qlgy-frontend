@@ -3,7 +3,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
 import { provideMockStore, MockStore } from '@ngrx/store/testing';
 import { initialState } from 'src/testing/mockedData/users';
-import { USERS_LOAD } from './store/appState.actions';
+import { USERS_LOAD } from './store/state/appState.actions';
 
 describe('AppComponent', () => {
   let store: MockStore;

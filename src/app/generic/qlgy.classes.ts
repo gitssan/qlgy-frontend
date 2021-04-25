@@ -1,9 +1,12 @@
 import { Injectable, Input } from "@angular/core";
 import { FormBuilder } from "@angular/forms";
-import { USER_DELETE, USER_NEW, USER_COMPONENT_STATE, USER_EDIT, USER_COMPONENT_TRANSIENT_STATE, MAIN_COMPONENT_STATE_RESET } from '@app/store/appState.actions';
-import { Store } from "@ngrx/store";
+import { Router } from "@angular/router";
+import { USER_DELETE, USER_NEW, USER_COMPONENT_STATE, USER_EDIT, USER_COMPONENT_TRANSIENT_STATE, MAIN_COMPONENT_STATE_RESET } from '@app/store/state/appState.actions';
+import { StoreRootState } from "@app/store/router/router.reducer";
+import { selectRouteSegments, validateEditRouteSegmentSelector, validateNewRouteSegmentSelector } from "@app/store/router/router.selectors";
+import { select, Store } from "@ngrx/store";
 import { USER_DELETE_FEEDBACK } from "./qlgy.constants";
-import { ApplicationState, IUserModel, UserStatus, ComponentState, UserModelType } from "./qlgy.models";
+import { ApplicationState, IUserModel, UserStatus, ComponentState, UserModelType, userId, ComponentAction } from "./qlgy.models";
 
 @Injectable()
 export abstract class AbstractView {
@@ -12,62 +15,109 @@ export abstract class AbstractView {
   UserStatus = UserStatus;
   UserModelType = UserModelType;
 
+  public selected: boolean = false;
+  public subscriptions: { [key: string]: any } = {};
   public componentState: ComponentState;
-  @Input() userModel: IUserModel;
 
-  set userModelRollback(userModel: IUserModel) {
-    this._userModelRollback = userModel;
-  }
+  @Input() userModel = { _id: UserModelType.NEW } as IUserModel;
+  // (data: IUserModel) {
+  //   if (data) {
+  //     this._userModel = data;
+  //   }
+  // }
 
-  get userModelRollback(): IUserModel {
-    return this._userModelRollback;
-  }
+  // get userModel() {
+  //   return this._userModel;
+  // }
 
   public jumpTable: {} = {
     [ComponentState.DELETE]: (componentState: ComponentState, userModel: IUserModel) => {
-      if (confirm(USER_DELETE_FEEDBACK)) {
-        this.store.dispatch({ type: USER_DELETE, payload: { userModel } });
-      }
+      //timeout to selected user > visual border feedback
+      setTimeout(() => {
+        if (confirm(USER_DELETE_FEEDBACK)) {
+          this.store.dispatch({ type: USER_DELETE, payload: { userModel } });
+        }
+      });
     },
     [ComponentState.TRANSIENT]: (componentState: ComponentState, userModel: IUserModel) => {
-      this.store.dispatch({ type: USER_COMPONENT_TRANSIENT_STATE, payload: { componentState: ComponentState.FORM, userModel } });
+      this.store.dispatch({ type: USER_COMPONENT_TRANSIENT_STATE, payload: { componentState: ComponentState.EDIT, userModel } });
     },
-    [ComponentState.CANCEL]: (componentState: ComponentState, userModel: IUserModel) => {
-      if (this.componentState === ComponentState.USER_EDIT) {
-        this.store.dispatch({ type: USER_COMPONENT_STATE, payload: { componentState: ComponentState.ROLLBACK, userModel: this.userModelRollback } });
-      } else if (this.componentState === ComponentState.USER_NEW) {
-        this.store.dispatch({ type: MAIN_COMPONENT_STATE_RESET });
+    [ComponentAction.CANCEL]: (jump: string, route: string) => {
+      if (this.componentState === ComponentState.NEW) {
+        this.router.navigate(['/']);
+      } else {
+        const routeString: string = `/${route}`;
+        const routeSegments: any[] = [routeString, this.userModel._id];
+        this.router.navigate(routeSegments);
       }
     },
-    [ComponentState.USER_EDIT]: (componentState: ComponentState, userModel: IUserModel) => {
+    [ComponentState.EDIT]: (componentState: ComponentState, userModel: IUserModel) => {
       this.store.dispatch({ type: USER_EDIT, payload: { userModel } });
     },
-    [ComponentState.USER_NEW]: (componentState: ComponentState, userModel: IUserModel) => {
+    [ComponentState.NEW]: (componentState: ComponentState, userModel: IUserModel) => {
       this.store.dispatch({ type: USER_NEW, payload: { userModel } });
-    },
-    [ComponentState.FORM]: (componentState: ComponentState, userModel: IUserModel) => {
-      this.store.dispatch({ type: USER_COMPONENT_STATE, payload: { componentState: ComponentState.FORM, userModel } });
     }
   };
 
-  private _userModelRollback: IUserModel;
-
-  constructor(public store: Store<{ appState: ApplicationState }>, public formBuilder: FormBuilder) {
+  constructor(public store: Store<{ appState: ApplicationState }>, public formBuilder: FormBuilder, public router: Router) {
 
   }
 
-  public changeComponentState(componentState: ComponentState, userModel: IUserModel = null) {
+  public init() {
+
+    this.subscriptions.validateNewRouteSegmentSelector = this.store.pipe(select(validateNewRouteSegmentSelector, { _id: this.userModel._id })).subscribe((state: any) => {
+      if (state !== undefined) {
+        if (state) {
+          this.componentState = ComponentState.NEW;
+          this.selected = true;
+        } else {
+          this.componentState = null;
+          this.selected = false;
+        }
+      }
+    });
+
+    this.subscriptions.validateEditRouteSegmentSelector = this.store.pipe(select(validateEditRouteSegmentSelector, { _id: this.userModel._id })).subscribe((state: any) => {
+      if (state !== undefined) {
+        if (state) {
+          this.componentState = ComponentState.EDIT;
+          this.selected = true;
+        } else {
+          this.componentState = ComponentState.VIEW;
+          this.selected = false;
+        }
+      }
+    });
+  }
+
+  public componentStateAction(componentState: ComponentState, userModel: IUserModel = null) {
     if (!userModel) {
       userModel = this.userModel;
     }
     this.jumpDispatchStore(componentState, userModel);
   }
 
-  public jumpDispatchStore(state: ComponentState, userModel: IUserModel) {
+  public jumpDispatchStore(state: ComponentState | ComponentAction, userModel: IUserModel | any) {
     if (this.jumpTable.hasOwnProperty(state)) {
       this.jumpTable[state](state, userModel);
     } else {
       // console.log('no jump action');
     }
+  }
+
+  public isNewEntry(): boolean {
+    return this.userModel._id === UserModelType.NEW
+  }
+
+  public hasRouteSegment(state: string[], label: ComponentState | userId) {
+    return !!state.find((key) => key === label.toString());
+  }
+
+  public changeRoute(route: string) {
+    this.jumpDispatchStore(ComponentAction.CANCEL, route);
+  }
+
+  ngOnDestroy(): void {
+
   }
 }

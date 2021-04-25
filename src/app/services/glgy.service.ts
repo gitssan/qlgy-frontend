@@ -5,7 +5,7 @@ import * as _ from 'lodash';
 import { HttpClient } from '@angular/common/http';
 import { USER_NOT_FOUND_FEEDBACK, USER_SUCCESSFULLY_ADDED_FEEDBACK, USER_SUCCESSFULLY_DELETED_FEEDBACK, USER_SUCCESSFULLY_MODIFIED_FEEDBACK } from '@app/generic/qlgy.constants';
 
-const usersDataKey = 'userData';
+export const usersDataKey = 'usersData';
 
 /**
  * Provides storage for authentication credentials.
@@ -18,10 +18,22 @@ export class QlgyService {
   private _usersData: IUserModel[];
 
   constructor(private http: HttpClient) {
+    this.init();
+  }
+
+  public init() {
     const savedUsersData = localStorage.getItem(usersDataKey);
     if (savedUsersData) {
       this._usersData = JSON.parse(savedUsersData);
     }
+  }
+
+  get usersData(): IUserModel[] {
+    return this._usersData;
+  }
+
+  set usersData(usersData: IUserModel[]) {
+    this._usersData = usersData;
   }
 
   public hasUsersData(): boolean {
@@ -34,8 +46,7 @@ export class QlgyService {
 
   public setUsersData(usersData: IUserModel[]): Observable<IUserModel[]> {
     this._usersData = usersData;
-    const storage = localStorage;
-    storage.setItem(usersDataKey, JSON.stringify(usersData));
+    localStorage.setItem(usersDataKey, JSON.stringify(usersData));
     return of([...usersData]);
   }
 

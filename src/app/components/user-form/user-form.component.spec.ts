@@ -6,7 +6,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { mainComponentStateSelector, singleUserSelector, usersSelector } from '@app/store/appstate.selectors';
 import { userIndy, userIndyPrivate, userInvalid, userNew, users } from '@testing/mockedData/users';
 import { initialState } from '@app/generic/qlgy.models';
-import { MAIN_COMPONENT_STATE_RESET, USER_COMPONENT_STATE, USER_DELETE, USER_EDIT, } from '@app/store/appState.actions';
+import { MAIN_COMPONENT_STATE_RESET, USER_COMPONENT_STATE, USER_DELETE, USER_EDIT, } from '@app/store/state/appState.actions';
 import { USER_DELETE_FEEDBACK } from '@app/generic/qlgy.constants';
 
 describe('UserFormComponent', () => {
@@ -123,14 +123,14 @@ describe('UserFormComponent', () => {
   });
 
 
-  it(`should call cancel from jumpTable, if path`, () => {
+  it(`should call cancel from jumpTable, if path`, fakeAsync(() => {
     component.componentState = ComponentState.USER_EDIT;
     const storeSpy = spyOn(component.store, 'dispatch').and.callThrough();
     component.jumpTable[ComponentState.CANCEL](ComponentState.CANCEL, component.userModel);
 
     const dispatchObject = { type: USER_COMPONENT_STATE };
     expect(storeSpy).toHaveBeenCalledWith(jasmine.objectContaining(dispatchObject));
-  });
+  }));
 
   it(`should call cancel from jumpTable, else path`, () => {
     component.componentState = ComponentState.USER_NEW;
@@ -150,25 +150,26 @@ describe('UserFormComponent', () => {
     expect(component.jumpTable[ComponentState.CANCEL]).toBeDefined();
   });
 
-  it(`should call delete from jumpTable, with confirm`, () => {
+  it(`should dispatch delete action from jumpTable, after confirming`, fakeAsync(() => {
     component.componentState = ComponentState.DELETE;
     const storeSpy = spyOn(component.store, 'dispatch').and.callThrough();
     const confirm = spyOn(window, 'confirm').and.callThrough().and.returnValue(true);
     component.jumpTable[ComponentState.DELETE](ComponentState.DELETE, component.userModel);
+    tick();
     expect(confirm).toHaveBeenCalled();
-
     const dispatchObject = { type: USER_DELETE };
     expect(storeSpy).toHaveBeenCalledWith(jasmine.objectContaining(dispatchObject));
-  });
+  }));
 
-  it(`should not call delete from jumpTable, confirm cancelled`, () => {
+  it(`should not dispatch delete action from jumpTable, confirm cancelled`, fakeAsync(() => {
     component.componentState = ComponentState.DELETE;
     const storeSpy = spyOn(component.store, 'dispatch').and.callThrough();
     const confirm = spyOn(window, 'confirm').and.callThrough().and.returnValue(false);
     component.jumpTable[ComponentState.DELETE](ComponentState.DELETE, component.userModel);
+    tick();
     expect(confirm).toHaveBeenCalled();
     expect(storeSpy).not.toHaveBeenCalled();
-  });
+  }));
 
   it(`[edit] should trigger status form field change`, fakeAsync(() => {
     component.userModel = userIndy;
@@ -194,37 +195,18 @@ describe('UserFormComponent', () => {
     expect(component.componentState).toBe(ComponentState.USER_NEW);
   }));
 
+  it(`[new] should call changeComponentState and jumpTo dispatch Store based on cancel`, () => {
+    component.userModel = userIndy;
+    fixture.detectChanges();
 
-  // it('should dispatch store', () => {
-  //   const deleteSpy = spyOn(component, 'delete').and.callThrough();
-  //   const storeSpy = spyOn(component.store, 'dispatch').and.callThrough();
-  //   component.delete();
+    const changeComponentStateSpy = spyOn(component, 'changeComponentState').and.callThrough();
+    const jumpDispatchStoreSpy = spyOn(component, 'jumpDispatchStore').and.callThrough();
+    component.changeComponentState(ComponentState.CANCEL);
 
-  //   const alert = spyOn(window, 'alert').and.returnValue(true);
-  //   const confirm = spyOn(window, 'confirm').and.returnValue(true);
-  //   expect(alert).toHaveBeenCalled();
-  //   expect(confirm).toHaveBeenCalled();
-  //   const confirm = spyOn(window, 'confirm').and.callThrough().and.returnValue(true);
+    expect(changeComponentStateSpy).toHaveBeenCalled();
+    expect(component.jumpDispatchStore).toHaveBeenCalledWith(ComponentState.CANCEL, component.userModel);
 
-  //   component.delete();
+    expect(component.jumpTable[ComponentState.CANCEL]).toBeDefined();
+  });
 
-  //   expect(confirm).toHaveBeenCalledWith(USER_DELETE_MESSAGE);
-  //   expect(deleteSpy).toHaveBeenCalled();
-
-  //   expect(storeSpy).toHaveBeenCalled();
-  // });
-
-  // it('should not dispatch store', () => {
-  //   const deleteSpy = spyOn(component, 'delete').and.callThrough();
-  //   const storeSpy = spyOn(component.store, 'dispatch').and.callThrough();
-
-  //   const confirm = spyOn(window, 'confirm').and.callThrough().and.returnValue(false);
-
-  //   component.delete();
-
-  //   expect(confirm).toHaveBeenCalledWith(USER_DELETE_MESSAGE);
-  //   expect(deleteSpy).toHaveBeenCalled();
-
-  //   expect(storeSpy).not.toHaveBeenCalled();
-  // });
 });

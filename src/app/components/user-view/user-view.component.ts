@@ -1,7 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AbstractView } from '@app/generic/qlgy.classes';
 import { ApplicationState, IUserModel, ComponentState } from '@app/generic/qlgy.models';
+import { StoreRootState } from '@app/store/router/router.reducer';
 import { Store } from '@ngrx/store';
 
 @Component({
@@ -16,7 +18,7 @@ export class UserViewComponent extends AbstractView {
   @Input() reversedIndex: number;
   @Input() userModel: IUserModel;
 
-  constructor(public store: Store<{ appState: ApplicationState }>, public formBuilder: FormBuilder) {
-    super(store, formBuilder);
+  constructor(public store: Store<{ appState: ApplicationState, routerState: StoreRootState }>, public formBuilder: FormBuilder, public router: Router) {
+    super(store, formBuilder, router);
   }
 }

@@ -1,7 +1,10 @@
-<button (click)="changeComponentState(ComponentState.FORM)" *ngIf="componentState !== ComponentState.FORM">add new user</button>
+<app-header></app-header>
+<feedback></feedback>
 <main>
-  <user *ngIf="componentState === ComponentState.FORM"></user>
+  <button (click)="changeRoute()" *ngIf="componentState === ComponentState.VIEW">add new
+    user</button>
+  <user></user>
   <user *ngFor="let user of usersModel$ | async; index as i" [userModel]="user"
     [reversedIndex]="(usersModel$ | async)?.length - i"></user>
-    <div *ngIf="(usersModel$ | async)?.length === 0">... no users (yet!)</div>
+  <div *ngIf="(usersModel$ | async)?.length === 0">... no users (yet!)</div>
 </main>

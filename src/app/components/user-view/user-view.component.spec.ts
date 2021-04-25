@@ -3,9 +3,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MockStore, provideMockStore } from '@ngrx/store/testing';
 import { ComponentState, initialState, IUserModel, IUserSelected } from '@app/generic/qlgy.models';
 import { UserViewComponent } from './user-view.component';
-import { mainComponentStateSelector, singleUserSelector, usersSelector } from '@app/store/appstate.selectors';
-import { userIndy, userIndyFocusedModel, users } from '@testing/mockedData/users';
+import { userIndy, users } from '@testing/mockedData/users';
 import { StatusComponent } from '../status/status.component';
+import { mainComponentStateSelector, singleUserSelector, usersSelector } from '@app/store/state/appstate.selectors';
 
 describe('UserViewComponent', () => {
   let component: UserViewComponent;

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ApplicationState } from '@app/generic/qlgy.models';
-import { usersLengthSelector } from '@app/store/appstate.selectors';
+import { usersLengthSelector } from '@app/store/state/appstate.selectors';
 import { select, Store } from '@ngrx/store';
 
 @Component({

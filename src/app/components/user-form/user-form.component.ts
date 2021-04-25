@@ -1,9 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AbstractView } from '@app/generic/qlgy.classes';
 import { REGEX_ALPHA_SPACES, STATUS } from '@app/generic/qlgy.constants';
 import { ApplicationState, IUserModel, UserModelType, ComponentState } from '@app/generic/qlgy.models';
-import { Store } from '@ngrx/store';
+import { StoreRootState } from '@app/store/router/router.reducer';
+import { selectRouteSegments } from '@app/store/router/router.selectors';
+import { select, Store } from '@ngrx/store';
 
 @Component({
   selector: 'user-form',
@@ -17,31 +20,25 @@ export class UserFormComponent extends AbstractView implements OnInit {
 
   public userForm: FormGroup;
 
-  constructor(public store: Store<{ appState: ApplicationState }>, public formBuilder: FormBuilder) {
-    super(store, formBuilder);
+  constructor(public store: Store<{ appState: ApplicationState, routerState: StoreRootState }>, public formBuilder: FormBuilder,  public router: Router) {
+    super(store, formBuilder, router);
   }
 
   ngOnInit(): void {
 
-    if (this.userModel._id === UserModelType.NEW) {
-      this.componentState = ComponentState.USER_NEW;
-    } else {
-      this.componentState = ComponentState.USER_EDIT;
-      this.userModelRollback = { ...this.userModel };
-    }
-
+    this.init();
     this.createForm();
 
     this.userForm.get(STATUS).valueChanges.subscribe((status) => {
       const userModel: IUserModel = { ...this.userModel, ...this.userForm.value, status } as IUserModel;
-      this.changeComponentState(ComponentState.TRANSIENT, userModel );
-    })
+      this.componentStateAction(ComponentState.TRANSIENT, userModel );
+    });
   }
 
   public handleForm() {
     if (this.userForm.valid) {
       const userModel: IUserModel = { ...this.userModel, ...this.userForm.value } as IUserModel;
-      this.changeComponentState(this.componentState, userModel);
+      this.componentStateAction(this.componentState, userModel);
     }
   }
 
