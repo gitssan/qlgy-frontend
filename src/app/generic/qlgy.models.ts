@@ -26,6 +26,7 @@ export enum UserStatus {
 export enum ComponentState {
   NEW = 'new',
   EDIT = 'edit',
+  FORM = 'form',
   VIEW = 'view',
   DELETE = 'delete',
   TRANSIENT = 'transient'
@@ -35,15 +36,14 @@ export enum ComponentAction {
   CANCEL = 'cancel'
 }
 
-export interface IUserSelected {
-  userModel: IUserModel;
-  componentState: ComponentState;
-}
+// export interface IUserSelected {
+//   userModel: IUserModel;
+//   componentState: ComponentState;
+// }
 
-export interface ApplicationState {
+export interface IApplicationState {
   componentState: ComponentState;
   usersModel: IUserModel[];
-  userFocused: IUserSelected;
   feedback: IFeedback[];
 }
 
@@ -57,6 +57,11 @@ export interface IQlgyPayload {
 
 }
 
+export interface IQlgyResponse {
+  message: string;
+  usersModel: IUserModel[];
+}
+
 export interface IFeedback {
   meesage: string;
 }
@@ -64,11 +69,10 @@ export interface IFeedback {
 export const initialState = {
   componentState: ComponentState.VIEW,
   usersModel: [],
-  userFocused: null,
   feedback: []
-} as ApplicationState;
+} as IApplicationState;
 
 export const ROUTE_NEW = '/new';
-export const ROUT_VIEW = '/view';
+export const ROUTE_VIEW = '/view';
 
 export const newEntryUsermodel: IUserModel = { _id: UserModelType.NEW } as IUserModel;

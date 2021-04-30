@@ -1,10 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AbstractView } from '@app/generic/qlgy.classes';
-import { ApplicationState, IUserModel, ComponentState } from '@app/generic/qlgy.models';
+import { AbstractView } from '@app/generic/user/qlgy.user';
+import { IApplicationState, IUserModel, ComponentState } from '@app/generic/qlgy.models';
 import { StoreRootState } from '@app/store/router/router.reducer';
+import { ComponentStore } from '@ngrx/component-store';
 import { Store } from '@ngrx/store';
+import { IUserState, UserStore } from '@app/generic/user/user.store';
 
 @Component({
   selector: 'user-view',
@@ -18,7 +20,11 @@ export class UserViewComponent extends AbstractView {
   @Input() reversedIndex: number;
   @Input() userModel: IUserModel;
 
-  constructor(public store: Store<{ appState: ApplicationState, routerState: StoreRootState }>, public formBuilder: FormBuilder, public router: Router) {
-    super(store, formBuilder, router);
+  constructor(public store: Store<{ appState: IApplicationState, routerState: StoreRootState }>, public formBuilder: FormBuilder, public router: Router, public componentStore: ComponentStore<IUserState>) {
+    super(store, formBuilder, router, componentStore);
+  }
+
+  ngOnInit(): void {
+    this.init();
   }
 }

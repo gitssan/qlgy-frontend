@@ -18,11 +18,10 @@ export const USER_DELETE = 'userDelete';
 export const USER_DELETE_SUCCESS = 'userDeleteSuccess';
 export const USER_DELETE_ERROR = 'userDeleteError';
 
-export const USER_COMPONENT_STATE = 'userComponentState';
 export const USER_COMPONENT_TRANSIENT_STATE = 'userViewTransientState';
 
 export const MAIN_COMPONENT_NEW_ENTRY_STATE = 'mainComponentNewEntryState';
-export const MAIN_COMPONENT_STATE_RESET = 'userComponentStateReset';
+export const MAIN_COMPONENT_STATE_RESET = 'mainComponentStateReset';
 
 export const MAIN_USERS_RELOAD = 'mainUsersReload';
 export const MAIN_USERS_RELOAD_ERROR = 'mainUsersReloadError';

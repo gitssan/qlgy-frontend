@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 
-import { ApplicationState, IUserModel, UserStatus, ComponentState, IUserSelected, UserModelType } from '@app/generic/qlgy.models';
+import { IApplicationState, IUserModel, UserStatus, ComponentState, UserModelType } from '@app/generic/qlgy.models';
 
 export const userIndy: IUserModel = {
   _id: 1,
@@ -19,11 +19,6 @@ export const userLeonie: IUserModel = {
   telephoneNumber: '+31619610308',
   status: UserStatus.PRIVATE
 } as IUserModel;
-
-export const userIndyFocusedModel: IUserSelected = {
-  userModel: userIndy,
-  componentState: ComponentState.VIEW
-}
 
 export const userIndyPrivate: IUserModel = {
   _id: 2,
@@ -95,9 +90,8 @@ export const users: IUserModel[] = [
 
 export const initialState = {
   componentState: ComponentState.VIEW,
-  usersModel: users,
-  userFocused: null
-} as ApplicationState;
+  usersModel: users
+} as IApplicationState;
 
 export const usersJsonString = '[{"_id": 1, "firstName": "Indy","lastName": "Cat3","emailAddress": "Qlgy36393639@gmail.com","telephoneNumber": "+31619610308"}]';
 export const usersJson = [

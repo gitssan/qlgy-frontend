@@ -65,6 +65,15 @@ export const validateEditRouteSegmentSelector = createSelector(selectRouter, (st
     }
 });
 
+export const routeSegmentSelector = createSelector(selectRouter, (state: RouterReducerState) => {
+    const split = state.state.url.split('/');
+    if (hasRouteSegment(split, ComponentState.EDIT)) {
+        return ComponentState.EDIT;
+    } else if (hasRouteSegment(split, ComponentState.NEW) ) {
+        return ComponentState.NEW;
+    }
+});
+
 const hasRouteSegment = (state: string[], label: ComponentState | userId) => {
     return !!state.find((key) => key === label.toString());
 }

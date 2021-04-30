@@ -1,15 +1,17 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ApplicationState, IUserModel, IUserSelected, UserModelType, ComponentState, userId } from '@app/generic/qlgy.models';
-import { select, Store } from '@ngrx/store';
-import { AbstractView } from '@app/generic/qlgy.classes';
+import { IApplicationState, IUserModel } from '@app/generic/qlgy.models';
+import { Store } from '@ngrx/store';
+import { AbstractView } from '@app/generic/user/qlgy.user';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { singleUserSelector } from '@app/store/state/appstate.selectors';
+import { ComponentStore } from '@ngrx/component-store';
+import { IUserState } from '@app/generic/user/user.store';
 
 @Component({
   selector: 'user',
   templateUrl: './user.component.html',
   styleUrls: ['./user.component.scss'],
+  providers: [ComponentStore]
 })
 export class UserComponent extends AbstractView implements OnInit {
 
@@ -19,20 +21,16 @@ export class UserComponent extends AbstractView implements OnInit {
   public componentType: string;
   public newEntryState: boolean;
 
-  constructor(public store: Store<{ appState: ApplicationState }>, public formBuilder: FormBuilder, public router: Router) {
-    super(store, formBuilder, router);
+  constructor(public store: Store<{ appState: IApplicationState }>, public formBuilder: FormBuilder, public router: Router, public componentStore: ComponentStore<IUserState>) {
+    super(store, formBuilder, router, componentStore);
   }
 
   ngOnInit(): void {
     this.init();
-    this.subscriptions.singleUserSelector = this.store.pipe(select(singleUserSelector, { _id: this.userModel._id })).subscribe((state: IUserSelected) => {
-      if (state) {
-        this.userModel = state.userModel;
-      }
-    });
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.singleUserSelector.unsubscribe();
+  changeStatus(userModel: IUserModel) {
+
+    this.componentStore.patchState({ userModel });
   }
 }
