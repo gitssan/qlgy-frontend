@@ -7,7 +7,7 @@ import { IApplicationState, IUserModel, UserModelType, ComponentState } from '@a
 import { StoreRootState } from '@app/store/router/router.reducer';
 import { ComponentStore } from '@ngrx/component-store';
 import { Store } from '@ngrx/store';
-import { IUserState, UserStore } from '@app/generic/user/user.store';
+import { IUserState, UserStore, initUserState } from '@app/generic/user/user.store';
 
 @Component({
   selector: 'user-form',
@@ -24,7 +24,7 @@ export class UserFormComponent extends AbstractView implements OnInit {
 
   public userForm: FormGroup;
 
-  constructor(public store: Store<{ appState: IApplicationState, routerState: StoreRootState }>, public formBuilder: FormBuilder,  public router: Router, public componentStore: ComponentStore<IUserState>) {
+  constructor(public store: Store<{ appState: IApplicationState, routerState: StoreRootState }>, public formBuilder: FormBuilder,  public router: Router, public componentStore: UserStore) {
     super(store, formBuilder, router, componentStore);
   }
 

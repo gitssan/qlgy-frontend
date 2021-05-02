@@ -20,7 +20,7 @@ export class UserViewComponent extends AbstractView {
   @Input() reversedIndex: number;
   @Input() userModel: IUserModel;
 
-  constructor(public store: Store<{ appState: IApplicationState, routerState: StoreRootState }>, public formBuilder: FormBuilder, public router: Router, public componentStore: ComponentStore<IUserState>) {
+  constructor(public store: Store<{ appState: IApplicationState, routerState: StoreRootState }>, public formBuilder: FormBuilder, public router: Router, public componentStore: UserStore) {
     super(store, formBuilder, router, componentStore);
   }
 

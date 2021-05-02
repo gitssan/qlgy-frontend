@@ -8,8 +8,9 @@ import { USER_DELETE_FEEDBACK } from "../qlgy.constants";
 import { IApplicationState, IUserModel, UserStatus, ComponentState, UserModelType, userId, ComponentAction } from "../qlgy.models";
 import { ComponentStore } from "@ngrx/component-store";
 import { Observable } from "rxjs";
-import { ininitValue, IUserState, UserStore } from "./user.store";
+import { IUserState, UserStore } from "./user.store";
 import { singleUserSelector } from "@app/store/state/appstate.selectors";
+import { tap } from "rxjs/operators";
 
 @Injectable()
 export abstract class AbstractView {
@@ -20,12 +21,12 @@ export abstract class AbstractView {
 
   public selected: boolean = false;
   public subscriptions: { [key: string]: any } = {};
-  public viewState: ComponentState;
   public routeState: ComponentState;
 
   @Input() userModel = { _id: UserModelType.NEW } as IUserModel;
 
-  public user$: Observable<IUserState>;
+  public state$: Observable<IUserState>;
+  public user$: Observable<IUserModel>;
   public status$: Observable<any>;
 
   public jumpTable: {} = {
@@ -57,37 +58,29 @@ export abstract class AbstractView {
     }
   };
 
-  constructor(public store: Store<{ appState: IApplicationState }>, public formBuilder: FormBuilder, public router: Router, public componentStore: ComponentStore<IUserState>) {
+  constructor(public store: Store<{ appState: IApplicationState }>, public formBuilder: FormBuilder, public router: Router, public componentStore: UserStore) {
 
   }
 
   public init() {
 
-    console.log('init');
-
     const _id = this.userModel._id;
-    this.componentStore.setState({ userModel: this.userModel } as IUserState);
 
-    this.user$ = this.componentStore.state$;
+    this.componentStore.patchState({ userModel: this.userModel } as IUserState);
 
-    this.status$ = this.componentStore.select(state => state.userModel.status);
-    const user = this.componentStore.select((state) => {
-      console.log('user', state);
-    });
+    this.state$ = this.componentStore.state$.pipe(tap(state => console.log(state)));
+    this.user$ = this.componentStore.select(state => state.userModel);
+    this.status$ = this.componentStore.select(state => state.userModel?.status);
 
-    // this.componentStore.state$.subscribe((state) => { this.viewState = state.viewState; });
-
-    this.store.pipe(select(singleUserSelector, _id)).subscribe((state) => {
-        this.componentStore.patchState({ userModel: state });
-    });
+    // this.store.pipe(select(singleUserSelector, _id)).subscribe((state) => {
+    //   this.componentStore.patchState({ userModel: state });
+    // });
 
     this.store.pipe(select(validateNewRouteSegmentSelector, { _id })).subscribe((state: any) => {
       if (state !== undefined) {
         if (state) {
-          this.viewState = ComponentState.FORM;
           this.componentStore.patchState({ selected: true, viewState: ComponentState.FORM });
         } else {
-          this.viewState = null;
           this.componentStore.patchState({ selected: false, viewState: null });
         }
       }
@@ -96,10 +89,8 @@ export abstract class AbstractView {
     this.store.pipe(select(validateEditRouteSegmentSelector, { _id })).subscribe((state: any) => {
       if (state !== undefined) {
         if (state) {
-          this.viewState = ComponentState.FORM;
           this.componentStore.patchState({ selected: true, viewState: ComponentState.FORM });
         } else {
-          this.viewState = ComponentState.VIEW;
           this.componentStore.patchState({ selected: false, viewState: ComponentState.VIEW });
         }
       }

@@ -4,14 +4,13 @@ import { Store } from '@ngrx/store';
 import { AbstractView } from '@app/generic/user/qlgy.user';
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { ComponentStore } from '@ngrx/component-store';
-import { IUserState } from '@app/generic/user/user.store';
+import { UserStore } from '@app/generic/user/user.store';
 
 @Component({
   selector: 'user',
   templateUrl: './user.component.html',
   styleUrls: ['./user.component.scss'],
-  providers: [ComponentStore]
+  providers: [UserStore]
 })
 export class UserComponent extends AbstractView implements OnInit {
 
@@ -21,16 +20,16 @@ export class UserComponent extends AbstractView implements OnInit {
   public componentType: string;
   public newEntryState: boolean;
 
-  constructor(public store: Store<{ appState: IApplicationState }>, public formBuilder: FormBuilder, public router: Router, public componentStore: ComponentStore<IUserState>) {
+  constructor(public store: Store<{ appState: IApplicationState }>, public formBuilder: FormBuilder, public router: Router, public componentStore: UserStore) {
     super(store, formBuilder, router, componentStore);
   }
 
   ngOnInit(): void {
+    console.log('init');
     this.init();
   }
 
   changeStatus(userModel: IUserModel) {
-
     this.componentStore.patchState({ userModel });
   }
 }

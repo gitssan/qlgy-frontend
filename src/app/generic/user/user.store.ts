@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { ComponentState, IUserModel } from "@app/generic/qlgy.models";
+import { ComponentState, IUserModel, UserStatus } from "@app/generic/qlgy.models";
 import { ComponentStore } from "@ngrx/component-store";
 
 export interface IUserState {
@@ -8,23 +8,17 @@ export interface IUserState {
     viewState: ComponentState;
 }
 
-export const ininitValue: IUserState = { userModel: {} as IUserModel, selected: false, viewState: null };
+export const initUserState: IUserState = { userModel: {  } as IUserModel, selected: false, viewState: null };
 
 @Injectable()
 export class UserStore extends ComponentStore<IUserState> {
 
     constructor() {
         console.log('ComponentStore::constructor');
-        super(ininitValue);
-
-
-        
+        super(initUserState);
     }
 
-    tmp() {
-        console.log('tmp');
-        const user = this.select((state) => {
-            console.log('user', state);
-          });
-    }
+    // tmp(userModel: IUserModel) {
+    //     this.patchState({ userModel } as IUserState);
+    // }
 }
