@@ -1,8 +1,8 @@
-<div [ngClass]="(componentState === ComponentState.NEW) ? 'user-form--new' : ''" class="user-form">   
+<div [ngClass]="((state$ | async)?.viewState === ComponentState.NEW) ? 'user-form--new' : ''" class="user-form">   
     <form [formGroup]="userForm" novalidate autocomplete="false">
         <header>
-            <h6>{{ (this.userModel._id === UserModelType.NEW) ? 'New user' : 'Edit user'}} </h6>
-            <span *ngIf="(this.userModel._id !== UserModelType.NEW)"> _id: {{userModelId()}}</span>    
+            <h6>{{ (id === UserModelType.NEW) ? 'New user' : 'Edit user'}} </h6>
+            <span *ngIf="(id !== UserModelType.NEW)"> _id: {{userModelId()}}</span>    
         </header>
 
         <main>

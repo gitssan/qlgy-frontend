@@ -1,29 +1,25 @@
 /* istanbul ignore file */
 
-import { ApplicationState } from '@app/generic/qlgy.models';
+import { IApplicationState, userId } from '@app/generic/qlgy.models';
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 
-const getAppState = createFeatureSelector<ApplicationState>('appState');
+const getAppState = createFeatureSelector<IApplicationState>('appState');
 
-export const mainComponentStateSelector = createSelector(getAppState, (state: ApplicationState) => {
-  return state.componentState;
-});
-
-export const usersLengthSelector = createSelector(getAppState, (state: ApplicationState) => {
+export const usersLengthSelector = createSelector(getAppState, (state: IApplicationState) => {
   return state.usersModel.length;
 });
 
-export const usersSelector = createSelector(getAppState, (state: ApplicationState) => {
+export const usersSelector = createSelector(getAppState, (state: IApplicationState) => {
   return state.usersModel;
 });
 
-export const singleUserSelector = createSelector(getAppState, (state: ApplicationState, props: any) => {
-  const _id: number = props._id;
-  if (state.userFocused?.userModel._id === _id) {
-    return state.userFocused;
-  }
+export const singleUserSelector = createSelector(getAppState, (state: IApplicationState, id: userId) => {
+  const res = state.usersModel.find((user) => {
+    return user._id === id
+  }); 
+  return res;
 });
 
-export const feedbackSelector = createSelector(getAppState, (state: ApplicationState) => {
+export const feedbackSelector = createSelector(getAppState, (state: IApplicationState) => {
   return state.feedback;
 });
