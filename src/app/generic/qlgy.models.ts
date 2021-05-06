@@ -15,7 +15,8 @@ export interface IUserModel {
 export type userId = number | UserModelType;
 
 export enum UserModelType {
-  NEW = 'new'
+  NEW = 'new',
+  VIEW = 'view'
 }
 
 export enum UserStatus {
@@ -29,17 +30,13 @@ export enum ComponentState {
   FORM = 'form',
   VIEW = 'view',
   DELETE = 'delete',
-  TRANSIENT = 'transient'
+  TRANSIENT = 'transient',
+  NULL = 'null'
 }
 
 export enum ComponentAction {
   CANCEL = 'cancel'
 }
-
-// export interface IUserSelected {
-//   userModel: IUserModel;
-//   componentState: ComponentState;
-// }
 
 export interface IApplicationState {
   componentState: ComponentState;

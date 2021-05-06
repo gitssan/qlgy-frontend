@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { IApplicationState } from '@app/generic/qlgy.models';
 import { usersLengthSelector } from '@app/store/state/appstate.selectors';
 import { select, Store } from '@ngrx/store';
@@ -10,9 +11,13 @@ import { select, Store } from '@ngrx/store';
 })
 export class HeaderComponent {
   public amount: number;
-  constructor(public store: Store<{ appState: IApplicationState }>) {
+  constructor(public store: Store<{ appState: IApplicationState }>, private router: Router) {
     this.store.pipe(select(usersLengthSelector)).subscribe((state) => {
       this.amount = state;
     });
+  }
+
+  changeRoute() {
+    this.router.navigate(['/']);
   }
 }

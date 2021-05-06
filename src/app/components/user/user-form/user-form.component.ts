@@ -1,13 +1,12 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AbstractView } from '@app/generic/user/qlgy.user';
+import { AbstractView } from '@app/components/user/qlgy.user';
 import { REGEX_ALPHA_SPACES, STATUS } from '@app/generic/qlgy.constants';
-import { IApplicationState, IUserModel, UserModelType, ComponentState } from '@app/generic/qlgy.models';
+import { IApplicationState, IUserModel, userId, UserModelType } from '@app/generic/qlgy.models';
 import { StoreRootState } from '@app/store/router/router.reducer';
-import { ComponentStore } from '@ngrx/component-store';
 import { Store } from '@ngrx/store';
-import { IUserState, UserStore, initUserState } from '@app/generic/user/user.store';
+import { UserStore } from '@app/components/user/user.store';
 
 @Component({
   selector: 'user-form',
@@ -16,23 +15,27 @@ import { IUserState, UserStore, initUserState } from '@app/generic/user/user.sto
 })
 export class UserFormComponent extends AbstractView implements OnInit {
 
-  @Input()
-  userModel: IUserModel;
-
   @Output()
   statusChanged = new EventEmitter();
 
-  public userForm: FormGroup;
+  @Input() set id(id: userId) {
+    this.componentType = (id === UserModelType.NEW) ? UserModelType.NEW : UserModelType.VIEW;
+    this._id = id;
+  }
 
-  constructor(public store: Store<{ appState: IApplicationState, routerState: StoreRootState }>, public formBuilder: FormBuilder,  public router: Router, public componentStore: UserStore) {
+  get id(): userId {
+    return this._id;
+  }
+
+  public userForm: FormGroup = new FormGroup({});
+
+  constructor(public store: Store<{ appState: IApplicationState, routerState: StoreRootState }>, public formBuilder: FormBuilder, public router: Router, public componentStore: UserStore) {
     super(store, formBuilder, router, componentStore);
   }
 
   ngOnInit(): void {
-
     this.init();
     this.createForm();
-
     this.userForm.get(STATUS).valueChanges.subscribe((status) => {
       const userModel: IUserModel = { ...this.userModel, ...this.userForm.value, status } as IUserModel;;
       this.statusChanged.emit(userModel);
@@ -57,6 +60,6 @@ export class UserFormComponent extends AbstractView implements OnInit {
   }
 
   public userModelId() {
-    return this.userModel._id;
+    return this.id;
   }
 }

@@ -4,7 +4,7 @@
   <button (click)="changeRoute()" *ngIf="componentState === ComponentState.VIEW">add new
     user</button>
   <user></user>
-  <user *ngFor="let user of usersModel$ | async; index as i" [userModel]="user"
+  <user *ngFor="let user of usersModel$ | async; index as i" [id]="user._id"
     [reversedIndex]="(usersModel$ | async)?.length - i"></user>
   <div *ngIf="(usersModel$ | async)?.length === 0">... no users (yet!)</div>
 </main>

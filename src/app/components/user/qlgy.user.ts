@@ -2,11 +2,10 @@ import { Injectable, Input } from "@angular/core";
 import { FormBuilder } from "@angular/forms";
 import { Router } from "@angular/router";
 import { USER_DELETE, USER_NEW, USER_EDIT, USER_COMPONENT_TRANSIENT_STATE } from '@app/store/state/appState.actions';
-import { routeSegmentSelector, validateEditRouteSegmentSelector, validateNewRouteSegmentSelector } from "@app/store/router/router.selectors";
+import { routeSegmentSelector } from "@app/store/router/router.selectors";
 import { select, Store } from "@ngrx/store";
-import { USER_DELETE_FEEDBACK } from "../qlgy.constants";
-import { IApplicationState, IUserModel, UserStatus, ComponentState, UserModelType, userId, ComponentAction } from "../qlgy.models";
-import { ComponentStore } from "@ngrx/component-store";
+import { USER_DELETE_FEEDBACK } from "../../generic/qlgy.constants";
+import { IApplicationState, IUserModel, UserStatus, ComponentState, UserModelType, userId, ComponentAction } from "../../generic/qlgy.models";
 import { Observable } from "rxjs";
 import { IUserState, UserStore } from "./user.store";
 import { singleUserSelector } from "@app/store/state/appstate.selectors";
@@ -22,12 +21,21 @@ export abstract class AbstractView {
   public selected: boolean = false;
   public subscriptions: { [key: string]: any } = {};
   public routeState: ComponentState;
+  public userModel: IUserModel = {} as IUserModel;
 
-  @Input() userModel = { _id: UserModelType.NEW } as IUserModel;
+  @Input() set id(id: userId) {
+    this._id = id;
+  }
 
+  get id(): userId {
+    return this._id;
+  }
+
+  public _id: userId = UserModelType.NEW;
   public state$: Observable<IUserState>;
   public user$: Observable<IUserModel>;
   public status$: Observable<any>;
+  public componentType: UserModelType = UserModelType.NEW;
 
   public jumpTable: {} = {
     [ComponentState.DELETE]: (componentState: ComponentState, userModel: IUserModel) => {
@@ -46,7 +54,7 @@ export abstract class AbstractView {
         this.router.navigate(['/']);
       } else {
         const routeString: string = `/${route}`;
-        const routeSegments: any[] = [routeString, this.userModel._id];
+        const routeSegments: any[] = [routeString, this.id];
         this.router.navigate(routeSegments);
       }
     },
@@ -59,73 +67,42 @@ export abstract class AbstractView {
   };
 
   constructor(public store: Store<{ appState: IApplicationState }>, public formBuilder: FormBuilder, public router: Router, public componentStore: UserStore) {
-
+    this.store.pipe(select(routeSegmentSelector)).subscribe((state) => this.routeState = state);
   }
 
   public init() {
-
-    const _id = this.userModel._id;
-
-    this.componentStore.patchState({ userModel: this.userModel } as IUserState);
-
-    this.state$ = this.componentStore.state$.pipe(tap(state => console.log(state)));
-    this.user$ = this.componentStore.select(state => state.userModel);
-    this.status$ = this.componentStore.select(state => state.userModel?.status);
-
-    // this.store.pipe(select(singleUserSelector, _id)).subscribe((state) => {
-    //   this.componentStore.patchState({ userModel: state });
-    // });
-
-    this.store.pipe(select(validateNewRouteSegmentSelector, { _id })).subscribe((state: any) => {
-      if (state !== undefined) {
-        if (state) {
-          this.componentStore.patchState({ selected: true, viewState: ComponentState.FORM });
-        } else {
-          this.componentStore.patchState({ selected: false, viewState: null });
-        }
-      }
-    });
-
-    this.store.pipe(select(validateEditRouteSegmentSelector, { _id })).subscribe((state: any) => {
-      if (state !== undefined) {
-        if (state) {
-          this.componentStore.patchState({ selected: true, viewState: ComponentState.FORM });
-        } else {
-          this.componentStore.patchState({ selected: false, viewState: ComponentState.VIEW });
-        }
-      }
-    });
-
-    this.store.pipe(select(routeSegmentSelector)).subscribe((state) => {
-      this.routeState = state;
-    });
+    const id = this.id;
+    this.componentStore.setStateFromRoute(id, this.componentType);
+    this.store.pipe(select(singleUserSelector, id)).subscribe((state) => this.patchComponentStore(state));
+    this.state$ = this.componentStore.state$; // .pipe(tap((state) => this.userModel = { ...state.userModel } ))
   }
 
   public componentStateAction(componentState: ComponentState, userModel: IUserModel = null) {
-    if (!userModel) {
-      userModel = this.userModel;
-    }
     this.jumpDispatchStore(componentState, userModel);
   }
 
   public jumpDispatchStore(state: ComponentState | ComponentAction, userModel: IUserModel | any) {
+    if (!userModel) userModel = this.userModel;
     if (this.jumpTable.hasOwnProperty(state)) {
       this.jumpTable[state](state, userModel);
-    } else {
-      console.log('no jump action');
     }
   }
 
   public isNewEntry(): boolean {
-    return this.userModel._id === UserModelType.NEW
+    return this.id === UserModelType.NEW;
   }
 
   public changeRoute(route: string) {
     this.jumpDispatchStore(ComponentAction.CANCEL, route);
   }
 
+  private patchComponentStore(userModel: IUserModel) {
+    if (!userModel) return;
+    this.userModel = userModel;
+    this.componentStore.patchState({ userModel });
+  }
+
   ngOnDestroy(): void {
-    // this.subscriptions.validateNewRouteSegmentSelector.unsubscribe();
-    // this.subscriptions.validateEditRouteSegmentSelector.unsubscribe();
+    // .. unsubscribe();
   }
 }
