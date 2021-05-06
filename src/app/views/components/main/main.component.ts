@@ -1,9 +1,10 @@
 import { Component, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { ApplicationState, IUserModel, ComponentState, ROUTE_NEW } from '@app/generic/qlgy.models';
-import { mainComponentStateSelector, usersSelector } from '@app/store/state/appstate.selectors';
+import { IApplicationState, IUserModel, ComponentState, ROUTE_NEW } from '@app/generic/qlgy.models';
+import { usersSelector } from '@app/store/state/appstate.selectors';
 import { select, Store } from '@ngrx/store';
-import { Observable, Subscription } from 'rxjs';
+import { Observable } from 'rxjs';
+import { mainComponentStateSelector } from '../../../store/router/router.selectors'
 
 @Component({
   selector: 'app-main',
@@ -19,14 +20,11 @@ export class MainComponent implements OnDestroy {
   public success: boolean;
   public users: object[];
   public subscriptions: { [key: string]: any } = {};
-  // public usersModel: IUserModel[];
 
-  private userModelSubscription: Subscription;
-  private appComponentStateSubscription: Subscription;
-
-  constructor(public store: Store<{ getAppState: ApplicationState }>, private router: Router) {
+  constructor(public store: Store<{ getAppState: IApplicationState }>, private router: Router) {
     this.usersModel$ = this.store.pipe(select(usersSelector));
-    this.subscriptions.mainComponentStateSelector = this.store.select(mainComponentStateSelector).subscribe((state: ComponentState) => {
+    this.store.select(mainComponentStateSelector).subscribe((state: ComponentState) => {
+      console.log('mainComponentStateSelector', state);
       this.componentState = state;
     });
   }
@@ -36,7 +34,6 @@ export class MainComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.userModelSubscription.unsubscribe();
-    this.appComponentStateSubscription.unsubscribe();
+
   }
 }

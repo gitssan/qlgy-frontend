@@ -1,7 +1,0 @@
-<section *ngIf="!(isNewEntry() && !selected)"
-  [ngClass]="{'user' : true, 'user--selected' : selected, 'user--public' : (userModel?.status === UserStatus.PUBLIC),  'user--private' : (userModel?.status === UserStatus.PRIVATE)}">
-
-  <user-view *ngIf="componentState === ComponentState.VIEW" [userModel]="userModel" [reversedIndex]="reversedIndex"></user-view>
-  <user-form *ngIf="componentState === ComponentState.EDIT || componentState === ComponentState.NEW" [userModel]="userModel"></user-form>
-  
-</section>

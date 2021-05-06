@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IUserModel } from '@app/generic/qlgy.models';
+import { IQlgyResponse, IUserModel } from '@app/generic/qlgy.models';
 import { Observable, of } from 'rxjs';
 import * as _ from 'lodash';
 import { HttpClient } from '@angular/common/http';
@@ -52,8 +52,8 @@ export class QlgyService {
 
   /* CRUD */
 
-  public userEdit(userModel: IUserModel): Observable<any> {
-    let message = USER_NOT_FOUND_FEEDBACK;
+  public userEdit(userModel: IUserModel): Observable<IQlgyResponse> {
+    let message: string = USER_NOT_FOUND_FEEDBACK;
 
     // this._usersData = this._usersData.map((user) => {
     //   if (user._id === userModel._id) {
@@ -65,14 +65,15 @@ export class QlgyService {
     // });
 
     const index = this._usersData.findIndex((user: IUserModel) => user._id === userModel._id);
+    const copyUsersData: IUserModel[] = [ ...this.usersData ];
 
     if (index !== -1) {
-      this._usersData[index] = { ...userModel, ...{ modifiedAt: new Date() } };
+      copyUsersData[index] = { ...userModel, ...{ modifiedAt: new Date() } };
       message = USER_SUCCESSFULLY_MODIFIED_FEEDBACK;
-      this.setUsersData(this._usersData);
+      this.setUsersData(copyUsersData);
     }
-
-    return of({ message, userModel });
+    const usersModel: IUserModel[] = [ ...copyUsersData ];
+    return of({ message, usersModel });
   }
 
   public userNew(userModel: IUserModel): Observable<any> {

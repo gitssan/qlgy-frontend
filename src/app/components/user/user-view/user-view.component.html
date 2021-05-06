@@ -2,29 +2,29 @@
     <header>
       <div>
         <label class="">[{{ reversedIndex }}] firstname</label>
-        <strong>{{ userModel.firstName }}</strong>
+        <strong>{{ (state$ | async).userModel.firstName }}</strong>
       </div>
     
       <div>
         <label>lastname</label>
-        <strong data-karma="lastName">{{ userModel.lastName }}</strong>
+        <strong data-karma="lastName">{{ (state$ | async).userModel.lastName }}</strong>
       </div>
 
-      <status [state]="userModel.status"></status>
+      <status [state]="(state$ | async).userModel.status"></status>
     </header>
 
     <main>  
           <label>_id</label>
-          <div>{{ userModel._id }}</div>
+          <div>{{ (state$ | async).userModel._id }}</div>
         
           <label>telephone number</label>
-          <div>{{ userModel.telephoneNumber }}</div>
+          <div>{{ (state$ | async).userModel.telephoneNumber }}</div>
         
           <label>created</label>
-          <div>{{ userModel.createdAt | date: 'HH:mm a dd/MM/yyyy' }}</div>
+          <div>{{ (state$ | async).userModel.createdAt | date: 'HH:mm a dd/MM/yyyy' }}</div>
         
           <label>modified</label>
-          <div>{{ userModel.modifiedAt | date: 'HH:mm a dd/MM/yyyy' }}</div>
+          <div>{{ (state$ | async).userModel.modifiedAt | date: 'HH:mm a dd/MM/yyyy' }}</div>
     </main>
 
     <footer>

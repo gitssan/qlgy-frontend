@@ -1,0 +1,7 @@
+<section class="user" *ngIf="!(isNewEntry() && !(state$ | async)?.selected)"
+  [ngClass]="{'user--selected' : (state$ | async)?.selected, 'user--public' : ((state$ | async).userModel?.status === UserStatus.PUBLIC),  'user--private' : ((state$ | async).userModel?.status === UserStatus.PRIVATE)}">
+  <user-view *ngIf="(state$ | async)?.viewState === ComponentState.VIEW" [id]="id" [reversedIndex]="reversedIndex">
+  </user-view>
+  <user-form *ngIf="(state$ | async)?.viewState === ComponentState.FORM" [id]="id" (statusChanged)=changeStatus($event)>
+  </user-form>
+</section>

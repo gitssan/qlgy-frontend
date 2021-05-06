@@ -22,7 +22,7 @@ jobs:
         run: npm i
 
       # - name: Unit-test
-      # run: npm test
+        # run: npm test
 
       - name: Build staging
         run: npm run staging
